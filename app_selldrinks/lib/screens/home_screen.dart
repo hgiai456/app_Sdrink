@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_selldrinks/screens/order_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,9 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        Center(
-          child: Text('Đặt hàng', style: Theme.of(context).textTheme.bodyLarge),
-        ),
+        OrderScreen(),
         Center(
           child: Text(
             'Hoạt động',
@@ -86,7 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex == 0
               ? FloatingActionButton(
                 onPressed: () {
-                  //Xử lý logic khi nhấn nút
+                  setState(() {
+                    _currentIndex = 1; // Chuyển sang trang đặt hàng
+                  });
                 },
                 backgroundColor: Theme.of(context).primaryColor,
                 child: const Icon(Icons.shopping_bag, color: Colors.white),

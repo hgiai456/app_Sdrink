@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Highlands Coffee',
       theme: highlandsTheme,
-      home: SearchScreen(),
+      home: HomeScreen(),
     );
   }
 }
