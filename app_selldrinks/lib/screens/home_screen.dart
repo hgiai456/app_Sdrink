@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'others/account_overview_screen.dart';
+import 'others/profile_screen.dart';
+import 'store_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,12 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
-        Center(
-          child: Text('Của hàng', style: Theme.of(context).textTheme.bodyLarge),
-        ),
-        Center(
-          child: Text('Khác', style: Theme.of(context).textTheme.bodyLarge),
-        ),
+        const StoreScreen(),
+        const AccountOverviewScreen(),
       ];
       _isFirstBuild = false;
     }
