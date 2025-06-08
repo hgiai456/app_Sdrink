@@ -1,7 +1,10 @@
+import 'package:app_selldrinks/screens/prod_detail_screen.dart';
 import 'package:app_selldrinks/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class OrderScreen extends StatefulWidget {
+  const OrderScreen({super.key});
+
   @override
   _OrderScreenState createState() => _OrderScreenState();
 }
@@ -31,7 +34,7 @@ class _OrderScreenState extends State<OrderScreen> {
         'price': '39,000 đ',
         'code': 'DK5003',
         'status': 'HẾT HÀNG',
-        'image': 'assets/san_pham.png',
+        'image': 'assets/test.png',
       },
       {
         'name': 'Kemdi Sô cô la',
@@ -39,8 +42,8 @@ class _OrderScreenState extends State<OrderScreen> {
             'Ngọt dịu, hòa quyện với vị chocolate vani thơm béo, hợp cho những ngày...',
         'price': '39,000 đ',
         'code': 'DK5001',
-        'status': 'HẾT HÀNG',
-        'image': 'assets/san_pham.png',
+        'status': 'CÒN HÀNG',
+        'image': 'assets/test2.png',
       },
       {
         'name': 'Kemdi Bánh Quy',
@@ -228,8 +231,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     width: 50,
                     height: 50,
                     errorBuilder:
-                        (context, error, stackTrace) =>
-                            Icon(Icons.error), // Xử lý lỗi tải ảnh
+                        (context, error, stackTrace) => Icon(Icons.error),
                   ),
                   title: Text(
                     product['name']!,
@@ -257,6 +259,21 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ],
                   ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ProductDetailScreen(
+                              name: product['name']!,
+                              description: product['description']!,
+                              price: product['price']!,
+                              status: product['status']!,
+                              image: product['image']!,
+                            ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
