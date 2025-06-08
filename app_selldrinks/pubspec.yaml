@@ -55,6 +55,7 @@ flutter:
     uses-material-design: true
     assets:
         - assets/images/coffee-beans.png
+        - assets/images/hg_coffee_logo.png.jpg
 
     # To add assets to your application, add an assets section, like this:
     # assets:
