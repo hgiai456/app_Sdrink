@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_selldrinks/screens/products_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,9 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        Center(
-          child: Text('Đặt hàng', style: Theme.of(context).textTheme.bodyLarge),
-        ),
+        const ProductListScreen(), //gọi class ProductListScreen() sẽ chuyển đến trang này khi nhấn đặt hàng
         Center(
           child: Text(
             'Hoạt động',
@@ -35,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Center(
-          child: Text('Của hàng', style: Theme.of(context).textTheme.bodyLarge),
+          child: Text('Cửa hàng', style: Theme.of(context).textTheme.bodyLarge),
         ),
         Center(
           child: Text('Khác', style: Theme.of(context).textTheme.bodyLarge),
