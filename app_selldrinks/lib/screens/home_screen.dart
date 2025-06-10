@@ -1,3 +1,7 @@
+import 'package:app_selldrinks/screens/homepage.dart';
+import 'package:app_selldrinks/screens/login_Screen.dart';
+import 'package:app_selldrinks/screens/register_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/screens/products_list_screen.dart';
 
@@ -20,25 +24,19 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
     if (_isFirstBuild) {
       _page = [
+        HomePage(),
         Center(
           child: Text(
             'Cửa hàng',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        const ProductListScreen(), //gọi class ProductListScreen() sẽ chuyển đến trang này khi nhấn đặt hàng
         Center(
-          child: Text(
-            'Hoạt động',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          child: Text('Đặt hàng', style: Theme.of(context).textTheme.bodyLarge),
         ),
-        Center(
-          child: Text('Cửa hàng', style: Theme.of(context).textTheme.bodyLarge),
-        ),
-        Center(
-          child: Text('Khác', style: Theme.of(context).textTheme.bodyLarge),
-        ),
+
+        RegisterScreen(),
+        LoginScreen(),
       ];
       _isFirstBuild = false;
     }
