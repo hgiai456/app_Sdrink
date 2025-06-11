@@ -115,9 +115,18 @@ class _StoreScreenState extends State<StoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cửa Hàng'),
+        backgroundColor: const Color(0xFFA10F1A),
+        title: const Text(
+          'Cửa Hàng',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -187,7 +196,7 @@ class _StoreScreenState extends State<StoreScreen> {
                             errorBuilder: (context, error, stackTrace) => Container(
                               width: 60,
                               height: 60,
-                              color: Colors.red[100],
+                              color: const Color.fromARGB(255, 255, 255, 255),
                               child: const Icon(Icons.store, size: 36, color: Colors.brown),
                             ),
                           ),
