@@ -186,13 +186,6 @@ class _ActivityScreenState extends State<ActivityScreen>
             ),
           ],
         ),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: primaryColor,
-            child: const Icon(Icons.person, color: Colors.white, size: 20),
-          ),
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
