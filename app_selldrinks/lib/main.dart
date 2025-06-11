@@ -1,4 +1,6 @@
 import 'package:app_selldrinks/screens/home_screen.dart';
+import 'package:app_selldrinks/screens/login_Screen.dart';
+import 'package:app_selldrinks/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import './themes/highland_theme.dart'; // Import theme
 
@@ -16,7 +18,12 @@ class MyApp extends StatelessWidget {
       title: 'Highlands Coffee',
       debugShowCheckedModeBanner: false,
       theme: highlandsTheme,
-      home: const HomeScreen(),
+      home: LoginScreen(),
+
+      routes: {
+        '/home': (context) => HomeScreen(),
+        '/login': (context) => LoginScreen(),
+      },
     );
   }
 }

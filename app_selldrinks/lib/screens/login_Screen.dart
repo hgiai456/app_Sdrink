@@ -1,3 +1,5 @@
+import 'package:app_selldrinks/screens/home_screen.dart';
+import 'package:app_selldrinks/screens/homepage.dart';
 import 'package:app_selldrinks/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -189,7 +191,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity, //Chiều rộng full màn hình
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(

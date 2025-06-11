@@ -1,3 +1,4 @@
+import 'package:app_selldrinks/screens/products_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../models/bannerhome.dart';
@@ -223,43 +224,55 @@ class _HomePageState extends State<HomePage> {
             itemCount: _loaiSanPhams.length,
             itemBuilder: (context, index) {
               final category = _loaiSanPhams[index];
-              return Container(
-                width: 80,
-                margin: const EdgeInsets.only(right: 12),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEFEAE5), // Màu nền nhạt từ theme
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductListScreen(),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 80,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
                           color: const Color(
-                            0xFFA10F1A,
-                          ).withAlpha((255 * 0.3).round()),
-                        ), // Đỏ Highlands nhạt
-                      ),
-                      child: Icon(
-                        _getCategoryIcon(category.tenLoai),
+                            0xFFEFEAE5,
+                          ), // Màu nền nhạt từ theme
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(
+                              0xFFA10F1A,
+                            ).withAlpha((255 * 0.3).round()),
+                          ), // Đỏ Highlands nhạt
+                        ),
+                        child: Icon(
+                          _getCategoryIcon(category.tenLoai),
 
-                        color: const Color(0xFFA10F1A), // Đỏ Highlands
-                        size: 28,
+                          color: const Color(0xFFA10F1A), // Đỏ Highlands
+                          size: 28,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      category.tenLoai,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF4B2B1B), // Màu nâu từ theme
+                      const SizedBox(height: 8),
+                      Text(
+                        category.tenLoai,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF4B2B1B), // Màu nâu từ theme
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
