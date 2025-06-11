@@ -3,6 +3,8 @@ import 'package:app_selldrinks/screens/homepage.dart';
 import 'package:app_selldrinks/screens/order_screen.dart';
 import 'package:app_selldrinks/screens/cart_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:app_selldrinks/screens/store_screen.dart';
+import 'package:app_selldrinks/screens/account_overview_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,12 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
         HomePage(),
         OrderScreen(),
         ActivityScreen(),
-        Center(
-          child: Text('Cửa hàng', style: Theme.of(context).textTheme.bodyLarge),
-        ),
-        Center(
-          child: Text('Khác', style: Theme.of(context).textTheme.bodyLarge),
-        ),
+        StoreScreen(),
+        AccountOverviewScreen(),
       ];
       _isFirstBuild = false;
     }
