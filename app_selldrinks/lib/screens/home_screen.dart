@@ -1,3 +1,4 @@
+import 'package:app_selldrinks/screens/activity_screen.dart';
 import 'package:app_selldrinks/screens/homepage.dart';
 import 'package:app_selldrinks/screens/login_Screen.dart';
 import 'package:app_selldrinks/screens/order_screen.dart';
@@ -26,12 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _page = [
         HomePage(),
         OrderScreen(),
-        Center(
-          child: Text(
-            'Hoạt động',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
+        ActivityScreen(),
         Center(
           child: Text('Cửa hàng', style: Theme.of(context).textTheme.bodyLarge),
         ),

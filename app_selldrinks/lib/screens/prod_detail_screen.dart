@@ -30,7 +30,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     int basePrice =
-        int.tryParse(widget.price.replaceAll(',', '').replaceAll(' đ', '')) ??
+        int.tryParse(widget.price.replaceAll(',', '').replaceAll(' VNĐ', '')) ??
         0;
     int totalPrice = _quantity * _sizePrices[_selectedSize]!;
 
