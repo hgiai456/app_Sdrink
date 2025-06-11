@@ -1,3 +1,4 @@
+import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/models/store.dart';
 
@@ -48,7 +49,11 @@ class _CartScreenState extends State<CartScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
-          onPressed: () => Navigator.pop(context),
+          onPressed:
+              () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              ),
         ),
         title: Text(
           'Giỏ Hàng',

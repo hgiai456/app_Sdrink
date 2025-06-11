@@ -1,6 +1,5 @@
 import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:app_selldrinks/screens/login_Screen.dart';
-import 'package:app_selldrinks/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import './themes/highland_theme.dart'; // Import theme
 
