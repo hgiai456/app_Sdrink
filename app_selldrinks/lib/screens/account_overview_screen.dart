@@ -1,6 +1,11 @@
+import 'package:app_selldrinks/screens/dieukhoandv_screen.dart';
+import 'package:app_selldrinks/screens/faq_screen.dart';
+import 'package:app_selldrinks/screens/feedback_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_selldrinks/screens/profile_screen.dart';
+import 'package:app_selldrinks/screens/settings_screen.dart';
+import 'package:app_selldrinks/screens/priacypolicy_screen.dart';
 
 //Hồ sơ
 class AccountOverviewScreen extends StatefulWidget {
@@ -239,7 +244,14 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -270,7 +282,14 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                       ),
                       title: const Text('Điều khoản dịch vụ'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TermsOfServiceScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const Divider(height: 1),
                     ListTile(
@@ -280,7 +299,14 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                       ),
                       title: const Text('Chính sách bảo mật'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicyScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const Divider(height: 1),
                     ListTile(
@@ -318,7 +344,14 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                       ),
                       title: const Text('Câu Hỏi Thường Gặp'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FAQScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const Divider(height: 1),
                     ListTile(
@@ -328,7 +361,14 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                       ),
                       title: const Text('Phản Hồi & Hỗ Trợ'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FeedbackScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
