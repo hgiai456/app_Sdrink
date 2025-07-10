@@ -1,5 +1,5 @@
 import 'package:app_selldrinks/components/product_item.dart';
-import 'package:app_selldrinks/models/Product.dart';
+import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 

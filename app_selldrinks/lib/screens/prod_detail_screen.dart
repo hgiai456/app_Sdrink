@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:app_selldrinks/themes/highland_theme.dart'; // Đảm bảo import file theme
 
 class ProductDetailScreen extends StatefulWidget {
+  final int productId;
   final String name;
   final String description;
   final String price;
@@ -11,6 +12,7 @@ class ProductDetailScreen extends StatefulWidget {
 
   const ProductDetailScreen({
     super.key,
+    required this.productId,
     required this.name,
     required this.description,
     required this.price,
