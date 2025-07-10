@@ -269,15 +269,7 @@ class _OrderScreen extends State<OrderScreen> {
                             MaterialPageRoute(
                               builder: (context) => ProductDetailScreen(
                                 productId: product['id'],
-                                name: product['name'] ?? '',
-                                description: product['description'] ?? '',
-                                price: product['ProDetails'] != null &&
-                                        product['ProDetails'].isNotEmpty
-                                    ? '${product['ProDetails'][0]['price']} đ'
-                                    : 'N/A',
-                                status: product['status'] ?? 'CÒN HÀNG',
-                                image: product['image'] ??
-                                    'assets/images/san_pham.png',
+                                // Có thể truyền thêm name, image, description nếu muốn load nhanh
                               ),
                             ),
                           );
