@@ -1,4 +1,4 @@
-import 'package:app_selldrinks/models/Order.dart';
+import 'package:app_selldrinks/models/order.dart';
 
 class OrderSampleData {
   static List<Order> getSampleOrders() {

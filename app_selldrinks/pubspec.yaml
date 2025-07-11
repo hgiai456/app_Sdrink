@@ -33,6 +33,7 @@ dependencies:
     intl: ^0.18.0
     shared_preferences: ^2.2.2
     cupertino_icons: ^1.0.8
+    http: ^0.13.6 # hoặc phiên bản mới nhất
 
 dev_dependencies:
     flutter_test:

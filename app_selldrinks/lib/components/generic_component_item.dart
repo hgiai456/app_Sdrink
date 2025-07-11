@@ -1,5 +1,5 @@
-import 'package:app_selldrinks/models/Order.dart';
-import 'package:app_selldrinks/models/Product.dart';
+import 'package:app_selldrinks/models/order.dart';
+import 'package:app_selldrinks/models/product.dart';
 import 'package:flutter/material.dart';
 
 class GenericItem extends StatelessWidget {
@@ -42,7 +42,6 @@ class GenericItem extends StatelessWidget {
           ),
         ),
       ),
-      badge: product.badge,
       badgeColor: Colors.orange,
       onTap: onTap,
     );
