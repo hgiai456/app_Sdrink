@@ -1,285 +1,272 @@
+import 'package:flutter/material.dart';
 import 'package:app_selldrinks/screens/prod_detail_screen.dart';
 import 'package:app_selldrinks/screens/search_screen.dart';
-import 'package:flutter/material.dart';
+import '../services/product_service.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
 
   @override
-  _OrderScreenState createState() => _OrderScreenState();
+  _OrderScreen createState() => _OrderScreen();
 }
 
-class _OrderScreenState extends State<OrderScreen> {
+class _OrderScreen extends State<OrderScreen> {
   int _selectedCategoryIndex = 0;
+  List categories = [];
+  List products = [];
+  bool isLoading = false;
+  int? selectedCategoryId;
 
-  // Dữ liệu ảo cho các danh mục với hình ảnh
-  final List<Map<String, String>> categories = [
-    {'name': 'KEMDI', 'image': 'assets/danh_muc.png'},
-    {'name': 'CÀ PHÊ TRUYỀN THỦY', 'image': 'assets/danh_muc.png'},
-    {'name': 'CÀ PHÊ PHÁ MAY', 'image': 'assets/danh_muc.png'},
-    {'name': 'TRÀ ĐÀO CAM SẢ', 'image': 'assets/danh_muc.png'},
-    {'name': 'BÁNH MÌ ĐẶC BIỆT', 'image': 'assets/danh_muc.png'},
-    {'name': 'NƯỚC ÉP TỎI', 'image': 'assets/danh_muc.png'},
-    {'name': 'TRÁI CÂY DẺO', 'image': 'assets/danh_muc.png'},
-    {'name': 'SỮA CHUA HY LẠP', 'image': 'assets/danh_muc.png'},
-  ];
+  final ScrollController _scrollController = ScrollController();
+  late ScrollController _categoryScrollController;
 
-  // Dữ liệu ảo cho sản phẩm với hình ảnh
-  final Map<String, List<Map<String, String>>> products = {
-    'KEMDI': [
-      {
-        'name': 'Kemdi Affogato',
-        'description':
-            'Kemdi Affogato được gắn với cà phê Highlands với vị kem đậm đà, ngậy...',
-        'price': '39,000 đ',
-        'code': 'DK5003',
-        'status': 'HẾT HÀNG',
-        'image': 'assets/test.png',
-      },
-      {
-        'name': 'Kemdi Sô cô la',
-        'description':
-            'Ngọt dịu, hòa quyện với vị chocolate vani thơm béo, hợp cho những ngày...',
-        'price': '39,000 đ',
-        'code': 'DK5001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/test2.png',
-      },
-      {
-        'name': 'Kemdi Bánh Quy',
-        'description': 'Béo bùi, giòn rụm, đỗc đáo từ bánh quy hòa cùng kem...',
-        'price': '39,000 đ',
-        'code': 'DK5002',
-        'status': 'HẾT HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'CÀ PHÊ TRUYỀN THỦY': [
-      {
-        'name': 'Cà Phê Sữa Đá',
-        'description': 'Hương vị truyền thống đậm đà, béo ngậy...',
-        'price': '35,000 đ',
-        'code': 'CP001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'CÀ PHÊ PHÁ MAY': [
-      {
-        'name': 'Cà Phê Đen Đá',
-        'description': 'Đen đặc, đậm vị, không đường...',
-        'price': '33,000 đ',
-        'code': 'CP002',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'TRÀ ĐÀO CAM SẢ': [
-      {
-        'name': 'Trà Đào Cam Sả',
-        'description': 'Thơm ngon, tươi mát, vị chua nhẹ...',
-        'price': '40,000 đ',
-        'code': 'TRA001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'BÁNH MÌ ĐẶC BIỆT': [
-      {
-        'name': 'Bánh Mì Đặc Biệt',
-        'description': 'Bánh mì giòn, pate béo ngậy...',
-        'price': '45,000 đ',
-        'code': 'PHI001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'NƯỚC ÉP TỎI': [
-      {
-        'name': 'Nước Ép Tỏi',
-        'description': 'Tỏi tươi ép, tốt cho sức khỏe...',
-        'price': '30,000 đ',
-        'code': 'NE001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'TRÁI CÂY DẺO': [
-      {
-        'name': 'Trái Cây Dẻo',
-        'description': 'Trái cây sấy dẻo, ngọt tự nhiên...',
-        'price': '25,000 đ',
-        'code': 'TCD001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-    'SỮA CHUA HY LẠP': [
-      {
-        'name': 'Sữa Chua Hy Lạp',
-        'description': 'Béo ngậy, giàu protein...',
-        'price': '50,000 đ',
-        'code': 'SCHL001',
-        'status': 'CÒN HÀNG',
-        'image': 'assets/san_pham.png',
-      },
-    ],
-  };
+  @override
+  void initState() {
+    super.initState();
+    _categoryScrollController = ScrollController();
+    loadCategories();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _categoryScrollController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadCategories() async {
+    setState(() => isLoading = true);
+    try {
+      categories = await ProductService.fetchCategories();
+      if (categories.isNotEmpty) {
+        setState(() {
+          selectedCategoryId = categories[0]['id'];
+        });
+        await loadProductsByCategory(selectedCategoryId!);
+      }
+    } catch (e) {
+      debugPrint('Error loading categories: $e');
+    }
+    setState(() => isLoading = false);
+  }
+
+  Future<void> loadProductsByCategory(int categoryId) async {
+    setState(() => isLoading = true);
+    try {
+      final result = await ProductService.fetchProductsByCategory(categoryId);
+      setState(() {
+        products = result;
+      });
+    } catch (e) {
+      debugPrint('Error loading products: $e');
+    }
+    setState(() => isLoading = false);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      // Có thể thêm logic load more ở đây nếu cần
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SearchScreen()),
-            );
-          },
-          child: TextField(
-            enabled: false,
-            decoration: InputDecoration(
-              hintText: 'Tìm Kiếm Tên Món Ăn',
-              hintStyle: TextStyle(
-                color: Theme.of(context).inputDecorationTheme.labelStyle?.color,
-              ),
-              border: Theme.of(context).inputDecorationTheme.border,
-              focusedBorder:
-                  Theme.of(context).inputDecorationTheme.focusedBorder,
-              filled: true,
-              fillColor: Colors.white,
-              suffixIcon: Icon(
-                Icons.search,
-                color: Theme.of(context).inputDecorationTheme.labelStyle?.color,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
+            child: Container(
+              height: 40,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: const Center(
+                child: TextField(
+                  enabled: false,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    hintText: 'Tìm Kiếm Tên Món Ăn',
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 0,
+                    ),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    isDense: true,
+                    suffixIcon: Icon(Icons.search),
+                  ),
+                ),
               ),
             ),
           ),
         ),
       ),
-      body: Column(
-        children: [
-          // Thay thế phần danh mục sản phẩm (vuốt ngang)
-          SizedBox(
-            height: 120, // Tăng chiều cao để chứa 2 hàng văn bản
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: List.generate(categories.length, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategoryIndex = index;
-                      });
-                    },
-                    child: Container(
-                      width: 80,
-                      height: 100, // Tăng chiều cao container để chứa văn bản
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundImage:
-                                AssetImage(categories[index]['image']!)
-                                    as ImageProvider,
-                            backgroundColor: Colors.grey[200],
-                          ),
-                          SizedBox(height: 4),
-                          Expanded(
-                            // Sử dụng Expanded thay Flexible để co giãn tự nhiên
-                            child: Text(
-                              categories[index]['name']!,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(
-                                color:
-                                    _selectedCategoryIndex == index
-                                        ? Theme.of(context).primaryColor
-                                        : null,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                // Danh mục sản phẩm
+                SizedBox(
+                  height: 100,
+                  child: SingleChildScrollView(
+                    controller: _categoryScrollController,
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: List.generate(categories.length, (index) {
+                        final category = categories[index];
+                        final isSelected = _selectedCategoryIndex == index;
+                        return GestureDetector(
+                          onTap: () async {
+                            final currentOffset = _categoryScrollController.offset;
+                            setState(() {
+                              _selectedCategoryIndex = index;
+                              selectedCategoryId = category['id'];
+                            });
+                            await loadProductsByCategory(selectedCategoryId!);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_categoryScrollController.hasClients) {
+                                _categoryScrollController.jumpTo(currentOffset);
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: 80,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.blue[50] : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected ? Colors.blue : Colors.grey[300]!,
+                                width: isSelected ? 2 : 1,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ),
-          // Danh sách sản phẩm theo danh mục đã chọn
-          Expanded(
-            child: ListView.builder(
-              itemCount:
-                  products[categories[_selectedCategoryIndex]['name']]!.length,
-              itemBuilder: (context, index) {
-                final product =
-                    products[categories[_selectedCategoryIndex]['name']]![index];
-                return ListTile(
-                  leading: Image.asset(
-                    product['image']!,
-                    width: 50,
-                    height: 50,
-                    errorBuilder:
-                        (context, error, stackTrace) => Icon(Icons.error),
-                  ),
-                  title: Text(
-                    product['name']!,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  subtitle: Text(
-                    product['description']!,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        product['price']!,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Text(
-                        product['status']!,
-                        style: TextStyle(
-                          color:
-                              product['status'] == 'HẾT HÀNG'
-                                  ? Colors.red
-                                  : Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ProductDetailScreen(
-                              name: product['name']!,
-                              description: product['description']!,
-                              price: product['price']!,
-                              status: product['status']!,
-                              image: product['image']!,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: isSelected ? 28 : 25,
+                                  backgroundImage: category['image'] != null &&
+                                          category['image'].isNotEmpty
+                                      ? NetworkImage(category['image'])
+                                      : const AssetImage('assets/danh_muc.png')
+                                          as ImageProvider,
+                                  backgroundColor: Colors.grey[200],
+                                  child: category['image'] == null ||
+                                          category['image'].isEmpty
+                                      ? const Icon(Icons.image_not_supported, color: Colors.grey)
+                                      : null,
+                                ),
+                                const SizedBox(height: 6),
+                                Expanded(
+                                  child: Text(
+                                    category['name'] ?? 'N/A',
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Theme.of(context).primaryColor
+                                          : Colors.black87,
+                                      fontSize: 11,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                      ),
-                    );
-                  },
-                );
-              },
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ),
+                // Danh sách sản phẩm
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return ListTile(
+                        leading: product['image'] != null &&
+                                product['image'].isNotEmpty
+                            ? Image.network(
+                                product['image'],
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Image.asset(
+                                      'assets/san_pham.png',
+                                      width: 50,
+                                      height: 50,
+                                    ),
+                              )
+                            : Image.asset(
+                                'assets/san_pham.png',
+                                width: 50,
+                                height: 50,
+                              ),
+                        title: Text(
+                          product['name'] ?? '',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        subtitle: Text(
+                          product['description'] ?? '',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              product['ProDetails'] != null &&
+                                      product['ProDetails'].isNotEmpty
+                                  ? '${product['ProDetails'][0]['price']} đ'
+                                  : 'N/A',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            Text(
+                              product['status'] ?? 'CÒN HÀNG',
+                              style: TextStyle(
+                                color: product['status'] == 'HẾT HÀNG'
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailScreen(
+                                productId: product['id'],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
