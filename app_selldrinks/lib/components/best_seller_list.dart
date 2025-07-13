@@ -1,4 +1,5 @@
 import 'package:app_selldrinks/models/product.dart';
+import 'package:app_selldrinks/screens/prod_detail_screen.dart';
 import 'package:app_selldrinks/services/product_service.dart';
 import 'package:flutter/material.dart';
 
@@ -131,8 +132,14 @@ class _BestSellerListState extends State<BestSellerList> {
         final product = _bestSellers[index];
         return GestureDetector(
           onTap: () {
-            // Navigator đến chi tiết sản phẩm
-            print('Tapped on product: ${product.name}');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        ProductDetailScreen(productId: _bestSellers[index].id),
+              ),
+            );
           },
           child: Container(
             width: 160,

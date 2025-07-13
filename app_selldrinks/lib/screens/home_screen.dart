@@ -76,10 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex == 0
               ? FloatingActionButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => CartScreen()),
-                  );
+                  setState(() {
+                    _currentIndex = 1; // Chuyển sang trang đặt hàng
+                  });
                 },
                 backgroundColor: Theme.of(context).primaryColor,
                 child: const Icon(Icons.shopping_bag, color: Colors.white),

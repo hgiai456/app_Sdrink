@@ -117,23 +117,42 @@ class _HomePageState extends State<HomePage> {
           // Thanh tìm kiếm
           Expanded(
             child: Container(
-              height: 40,
+              height: 44,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFCCCCCC)),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: TextField(
+                style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Tìm kiếm sản phẩm...',
                   hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: const Color(0xFF4B2B1B),
-                    size: 20,
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(
+                      Icons.search,
+                      color: Color(0xFF4B2B1B),
+                      size: 20,
+                    ),
                   ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  prefixIconConstraints: BoxConstraints(minWidth: 40),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
               ),
             ),

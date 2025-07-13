@@ -1,6 +1,7 @@
 import 'package:app_selldrinks/components/product_item.dart';
 import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/screens/home_screen.dart';
+import 'package:app_selldrinks/screens/prod_detail_screen.dart';
 import 'package:app_selldrinks/services/product_service.dart';
 import 'package:flutter/material.dart';
 
@@ -168,6 +169,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         return ProductItem(
                           product: products[index],
                           onTap: () {
+                            //Xử lý sự kiện khi nhấn vào 1 product trong Product_list_screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => ProductDetailScreen(
+                                      productId: products[index].id,
+                                    ),
+                              ),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

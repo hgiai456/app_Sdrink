@@ -17,4 +17,25 @@ class CategoryService {
       throw Exception('Failed to load categories');
     }
   }
+
+  static Future<List<Category>> getAllCategories() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/categories'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+        return jsonData.map((json) => Category.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
 }
+
+
+
+  // Lấy danh sách tất cả danh mục
+  
+

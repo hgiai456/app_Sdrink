@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Highlands Coffee',
+      title: 'HG Coffee was founded by G5',
       debugShowCheckedModeBanner: false,
       theme: highlandsTheme,
       home: LoginScreen(),

@@ -32,4 +32,59 @@ class ProductService {
       throw Exception('Failed to load products by category');
     }
   }
+
+  static Future<List<dynamic>> fetchCategories() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/categories'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data'] ?? [];
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Lấy danh sách sản phẩm theo danh mục
+  static Future<List<dynamic>> fetchProductsByCategory(int categoryId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/products-by-category?category_id=$categoryId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data'] ?? [];
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Lấy chi tiết sản phẩm theo ID
+  static Future<Map<String, dynamic>> getProductDetail(int productId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/products/$productId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load product detail');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
 }
+
+  // Lấy danh sách tất cả danh mục
+  
+
