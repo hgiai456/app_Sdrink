@@ -1,83 +1,55 @@
 import 'package:app_selldrinks/components/product_item.dart';
-import 'package:app_selldrinks/models/Product.dart';
+import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/screens/home_screen.dart';
+import 'package:app_selldrinks/services/product_service.dart';
 import 'package:flutter/material.dart';
 
 class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({super.key});
+  final int? categoryId;
+  final String? categoryName;
+
+  const ProductListScreen({super.key, this.categoryId, this.categoryName});
 
   @override
   State<StatefulWidget> createState() => _ProductListScreenState();
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  final List<Product> products = [
-    Product(
-      id: 1,
-      name: 'Phin sữa đá',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl:
-          'assets/images/phin-sua-da-eae59734-6d54-471e-a34f-7ffe0fb68e6c.webp',
-      badge: "BÁN CHẠY!",
-    ),
-    Product(
-      id: 2,
-      name: 'Phin đen đá',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 30000,
-      imageUrl: 'assets/images/phin-den-da.webp',
-      badge: "BÁN CHẠY!",
-    ),
-    Product(
-      id: 3,
-      name: 'Americano',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl: 'assets/images/americano.webp',
-      badge: "BÁN CHẠY!",
-    ),
+  List<Product> products = [];
+  bool isLoading = true;
 
-    Product(
-      id: 4,
-      name: 'Americano',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl: 'assets/images/americano.webp',
-      badge: "BÁN CHẠY!",
-    ),
-    Product(
-      id: 5,
-      name: 'Americano',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl: 'assets/images/americano.webp',
-      badge: "BÁN CHẠY!",
-    ),
-    Product(
-      id: 6,
-      name: 'Americano',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl: 'assets/images/americano.webp',
-      badge: "BÁN CHẠY!",
-    ),
-    Product(
-      id: 7,
-      name: 'Americano',
-      description:
-          'hương vị cà phê Việt Nam đích thực! Từng hạt cà phê hảo hạng được chọn bằng tay, phối trộn độc đáo giữa hạt Robusta từ cao nguyên Việt Nam, thêm Arabica thơm lừng',
-      price: 35000,
-      imageUrl: 'assets/images/americano.webp',
-      badge: "BÁN CHẠY!",
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadProducts();
+  }
+
+  Future<void> loadProducts() async {
+    try {
+      List<Product> fetchedProducts;
+
+      if (widget.categoryId != null) {
+        // Nếu có categoryId, lọc sản phẩm theo category
+        fetchedProducts = await ProductService.getProductsByCategory(
+          widget.categoryId!,
+        );
+      } else {
+        // Nếu không có categoryId, lấy tất cả sản phẩm
+        fetchedProducts = await ProductService.getProducts();
+      }
+
+      print("Sản phẩm từ API: $fetchedProducts");
+      setState(() {
+        products = fetchedProducts;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Lỗi khi load sản phẩm: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +66,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
               MaterialPageRoute(builder: (context) => const HomeScreen()),
               (Route<dynamic> route) => false,
             );
-          }, //Xử lý khi CLick
+          },
         ),
         title: Text(
-          "Cà phê truyền thống",
+          widget.categoryName ?? "Tất cả sản  phẩm",
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyMedium!.color, // #4B2B1B
+            color: Theme.of(context).textTheme.bodyMedium!.color,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -144,35 +116,74 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   child: Icon(
                     Icons.apps,
                     size: 20,
-                    color: Theme.of(context).iconTheme.color, // #4B2B1B
+                    color: Theme.of(context).iconTheme.color,
                   ),
                 ),
               ],
             ),
           ),
           Expanded(
-            //Danh sách sản phẩm
-            child: ListView.builder(
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                return ProductItem(
-                  product: products[index],
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Đã chọn ${products[index].name}'),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        duration: const Duration(seconds: 1),
+            child:
+                isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFA10F1A),
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                    )
+                    : products.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Không có sản phẩm nào',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.categoryName != null
+                                ? 'Danh mục "${widget.categoryName}" chưa có sản phẩm'
+                                : 'Hãy thêm sản phẩm mới',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    )
+                    : ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        return ProductItem(
+                          product: products[index],
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Đã chọn ${products[index].name}',
+                                ),
+                                backgroundColor: Theme.of(context).primaryColor,
+                                duration: const Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
           ),
         ],
       ),
-      //Button đặt hàng
       bottomSheet: Container(
         height: 60,
         color: Theme.of(context).primaryColor,
@@ -186,16 +197,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Mang Về',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                   Text(
                     '35 Thang Long Tan Binh HCMC',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontSize: 14,
-                    ), // Sử dụng style từ theme
-                  ), //Địa chỉ cửa hàng đã chọn
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                  ),
                 ],
               ),
             ),
