@@ -20,6 +20,7 @@ class _CartScreenState extends State<CartScreen> {
       address: '35 Thăng Long',
       district: 'P. 4, Q. Tân Bình',
       phone: '(028) 7100 0035',
+      image: '',
     ),
     Store(
       id: '2',
@@ -27,6 +28,7 @@ class _CartScreenState extends State<CartScreen> {
       address: '123 Nguyen Van Cu',
       district: 'P. 1, Q. 1',
       phone: '(028) 1234 5678',
+      image: '',
     ),
   ];
 
