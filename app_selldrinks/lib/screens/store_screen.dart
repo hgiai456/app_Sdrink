@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/store.dart';
-import '../service/store_service.dart';
+import '../services/store_service.dart';
 
 // cửa hàng
 class StoreScreen extends StatefulWidget {
