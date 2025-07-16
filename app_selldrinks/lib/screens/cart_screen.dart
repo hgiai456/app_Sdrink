@@ -47,10 +47,10 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFDA8359),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
+          icon: Icon(Icons.arrow_back_ios, color: const Color(0xFFDA8359)),
           onPressed:
               () => Navigator.pushReplacement(
                 context,
@@ -59,7 +59,10 @@ class _CartScreenState extends State<CartScreen> {
         ),
         title: Text(
           'Giỏ Hàng',
-          style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 18,
+            color: const Color(0xFFDA8359),
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -67,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
             onPressed: () {},
             child: Text(
               'Xóa Giỏ Hàng',
-              style: TextStyle(color: theme.primaryColor, fontSize: 14),
+              style: TextStyle(color: const Color(0xFFDA8359), fontSize: 14),
             ),
           ),
         ],

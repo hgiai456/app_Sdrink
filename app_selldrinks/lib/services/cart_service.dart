@@ -5,7 +5,7 @@ import 'package:app_selldrinks/models/cart.dart';
 import 'package:http/http.dart' as http;
 
 Future<int?> fetchCartIdBySession(String sessionId) async {
-  final res = await http.get(Uri.parse('http://localhost:3000/api/carts'));
+  final res = await http.get(Uri.parse('http://10.0.2.2:3003/api/carts'));
 
   if (res.statusCode == 200) {
     final List<dynamic> carts = jsonDecode(res.body);

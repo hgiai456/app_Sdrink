@@ -61,9 +61,7 @@ class _ActivityScreenState extends State<ActivityScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       builder: (context) {
         return DraggableScrollableSheet(
           expand: false,
@@ -72,9 +70,7 @@ class _ActivityScreenState extends State<ActivityScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: ListView(
                 controller: scrollController,
@@ -139,9 +135,10 @@ class _ActivityScreenState extends State<ActivityScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFFDA8359),
         title: Row(
           children: [
-            Icon(Icons.coffee, color: Theme.of(context).iconTheme.color),
+            Icon(Icons.coffee, color: const Color(0xFFDA8359)),
             const SizedBox(width: 4),
             Text(
               '0',
@@ -153,15 +150,18 @@ class _ActivityScreenState extends State<ActivityScreen>
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
+            icon: Icon(Icons.search, color: const Color(0xFFDA8359)),
             onPressed: _showSearchDialog,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Theme.of(context).scaffoldBackgroundColor,
-          labelColor: Theme.of(context).scaffoldBackgroundColor,
-          unselectedLabelColor: Theme.of(context).scaffoldBackgroundColor,
+          indicator: BoxDecoration(
+            color: const Color(0xFFDA8359),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: const [Tab(text: 'Đơn Đặt Hàng'), Tab(text: 'Điểm Drips')],
         ),
       ),

@@ -36,11 +36,17 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3F0),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(170),
         child: Container(
-          color: const Color(0xFFA10F1A),
+          decoration: BoxDecoration(
+            color: const Color(0xFFDA8359), // Header cam đất
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(32),
+              bottomRight: Radius.circular(32),
+            ),
+          ),
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

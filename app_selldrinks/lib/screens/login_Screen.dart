@@ -1,6 +1,9 @@
 import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:app_selldrinks/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:app_selldrinks/services/user_service.dart';
+import 'package:app_selldrinks/models/loginuser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   // Tạo STF cho màn hình dn để có thể thay đổi trạng thái
@@ -12,13 +15,55 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   //Controller để quản lý text input
-
+  final UserService _userService = UserService();
   final TextEditingController _emailController = TextEditingController();
   //tạo controller cho input email
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
   //tạo biến boolean để lưu trạng thái
   bool _obscurePassword = true;
+
+  // Thêm hàm xử lý đăng nhập
+  Future<void> _handleLogin() async {
+    String input = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (input.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Vui lòng nhập đầy đủ thông tin')));
+      return;
+    }
+
+    // Kiểm tra input là email hay số điện thoại
+    LoginUser loginUser;
+    if (RegExp(r'^[0-9]{9,}$').hasMatch(input)) {
+      // Là số điện thoại
+      loginUser = LoginUser(phone: input, password: password);
+    } else {
+      // Là email
+      loginUser = LoginUser(email: input, password: password);
+    }
+
+    final result = await _userService.login(loginUser);
+
+    if (result['success']) {
+      String token = result['token'];
+      // Lưu token vào SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      // Chuyển sang HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['error'] ?? 'Đăng nhập thất bại')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,14 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity, //Chiều rộng full màn hình
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
-                  },
+                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
