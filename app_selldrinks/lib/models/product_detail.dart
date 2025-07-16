@@ -74,3 +74,21 @@ class ProductDetail {
     };
   }
 }
+
+String getSizeName(int sizeId) {
+  switch (sizeId) {
+    case 1:
+      return 'S';
+    case 2:
+      return 'M';
+    case 3:
+      return 'L';
+    default:
+      return 'Khác';
+  }
+}
+
+
+// for (var size in _sizes) {
+//   size['size_name'] = getSizeName(size['size_id']);
+// } => xuất danh sách size

@@ -32,6 +32,33 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         productDetail = data;
         _sizes = data['sizes'] ?? [];
+        for (var size in _sizes) {
+          switch (size['size_id']) {
+            // size_id sẽ được set mặc định size_name là S,M,L theo API
+            case 1:
+              size['size_name'] = 'S';
+              break;
+
+            case 2:
+              size['size_name'] = 'M';
+              break;
+
+            case 3:
+              size['size_name'] = 'L';
+              break;
+
+            default:
+              size['size_name'] = 'Khác';
+          }
+        }
+        final seen = <int>{}; //Hàm xử lý trùng size
+        _sizes =
+            _sizes.where((size) {
+              if (seen.contains(size['size_id'])) return false;
+              seen.add(size['size_id']);
+              return true;
+            }).toList();
+
         if (_sizes.isNotEmpty) {
           _selectedSizeName = _sizes[0]['size_name'];
           _selectedSizePrice = _sizes[0]['price'];
