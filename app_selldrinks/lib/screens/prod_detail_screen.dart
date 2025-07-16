@@ -50,8 +50,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (productDetail == null)
+    if (productDetail == null) {
       return const Center(child: Text('Không tìm thấy sản phẩm'));
+    }
     final data = productDetail!;
     int totalPrice = _quantity * (_selectedSizePrice ?? 0);
 

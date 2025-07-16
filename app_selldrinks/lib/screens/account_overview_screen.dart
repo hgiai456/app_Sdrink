@@ -9,7 +9,7 @@ import 'package:app_selldrinks/screens/priacypolicy_screen.dart';
 
 //Hồ sơ
 class AccountOverviewScreen extends StatefulWidget {
-  const AccountOverviewScreen({Key? key}) : super(key: key);
+  const AccountOverviewScreen({super.key});
 
   @override
   State<AccountOverviewScreen> createState() => _AccountOverviewScreenState();

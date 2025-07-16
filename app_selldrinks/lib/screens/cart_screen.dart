@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:app_selldrinks/models/store.dart';
 
 class CartScreen extends StatefulWidget {
+  const CartScreen({super.key});
+
   @override
   _CartScreenState createState() => _CartScreenState();
 }
@@ -607,30 +609,28 @@ class _CartScreenState extends State<CartScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 16),
-              ...stores
-                  .map(
-                    (store) => ListTile(
-                      title: Text(store.name),
-                      subtitle: Text(store.fullAddress),
-                      leading: Radio<Store>(
-                        value: store,
-                        groupValue: selectedStore,
-                        onChanged: (Store? value) {
-                          setState(() {
-                            selectedStore = value;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedStore = store;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                  )
-                  .toList(),
+              ...stores.map(
+                (store) => ListTile(
+                  title: Text(store.name),
+                  subtitle: Text(store.fullAddress),
+                  leading: Radio<Store>(
+                    value: store,
+                    groupValue: selectedStore,
+                    onChanged: (Store? value) {
+                      setState(() {
+                        selectedStore = value;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                  onTap: () {
+                    setState(() {
+                      selectedStore = store;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
             ],
           ),
         );

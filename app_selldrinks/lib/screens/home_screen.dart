@@ -1,7 +1,6 @@
 import 'package:app_selldrinks/screens/activity_screen.dart';
 import 'package:app_selldrinks/screens/homepage.dart';
 import 'package:app_selldrinks/screens/order_screen.dart';
-import 'package:app_selldrinks/screens/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/screens/store_screen.dart';
 import 'package:app_selldrinks/screens/account_overview_screen.dart';

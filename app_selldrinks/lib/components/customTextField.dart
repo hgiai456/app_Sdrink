@@ -20,7 +20,7 @@ class CustomTextField extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding; // Padding bên trong
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     this.controller,
     this.isPassword = false,
@@ -36,7 +36,7 @@ class CustomTextField extends StatefulWidget {
     this.focusedBorderColor,
     this.borderRadius = 8.0,
     this.contentPadding,
-  }) : super(key: key);
+  });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
