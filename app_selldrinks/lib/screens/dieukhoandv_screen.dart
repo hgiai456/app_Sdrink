@@ -13,7 +13,7 @@ class TermsOfServiceScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: Color(0xFF4B2B1B),
+            color: Color(0xFF383838),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -22,7 +22,7 @@ class TermsOfServiceScreen extends StatelessWidget {
           'Điều Khoản Dịch Vụ',
           style: theme.textTheme.titleLarge?.copyWith(
             fontSize: 18,
-            color: Color(0xFF4B2B1B),
+            color: Color(0xFF383838),
           ),
         ),
         centerTitle: true,
@@ -50,7 +50,7 @@ class TermsOfServiceScreen extends StatelessWidget {
                   Text(
                     'Cập nhật lần cuối vào ngày 13/06/2023',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Color(0xFF808080),
                     ),
                   ),
                   const SizedBox(height: 16),

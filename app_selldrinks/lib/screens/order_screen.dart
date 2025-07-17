@@ -150,13 +150,15 @@ class _OrderScreen extends State<OrderScreen> {
                               margin: const EdgeInsets.only(right: 12),
                               decoration: BoxDecoration(
                                 color:
-                                    isSelected ? Colors.blue[50] : Colors.white,
+                                    isSelected
+                                        ? Color(0xFFF5F5F5)
+                                        : Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color:
                                       isSelected
-                                          ? Colors.blue
-                                          : Colors.grey[300]!,
+                                          ? Color(0xFF383838)
+                                          : Color(0xFF808080),
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
@@ -173,13 +175,13 @@ class _OrderScreen extends State<OrderScreen> {
                                                   'assets/danh_muc.png',
                                                 )
                                                 as ImageProvider,
-                                    backgroundColor: Colors.grey[200],
+                                    backgroundColor: Color(0xFFF5F5F5),
                                     child:
                                         category['image'] == null ||
                                                 category['image'].isEmpty
                                             ? const Icon(
                                               Icons.image_not_supported,
-                                              color: Colors.grey,
+                                              color: Color(0xFF808080),
                                             )
                                             : null,
                                   ),
@@ -194,7 +196,7 @@ class _OrderScreen extends State<OrderScreen> {
                                         color:
                                             isSelected
                                                 ? Theme.of(context).primaryColor
-                                                : Colors.black87,
+                                                : Color(0xFF383838),
                                         fontSize: 11,
                                         fontWeight:
                                             isSelected

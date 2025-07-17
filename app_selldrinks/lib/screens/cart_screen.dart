@@ -407,7 +407,8 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCartItem(Map<String, dynamic> item, int index) {
-    // Xử lý dữ liệu
+    print('Building cart item: $item');
+    // Xử lý dữ liệu an toàn
     final productDetail = item['product_detail'] as Map<String, dynamic>?;
     final productName = productDetail?['name'] ?? 'Sản phẩm không xác định';
     final price = productDetail?['price'] ?? 0;
@@ -415,8 +416,20 @@ class _CartScreenState extends State<CartScreen> {
     final quantity = item['quantity'] ?? 1;
     final sizeId = productDetail?['size_id'] ?? 0;
     final sizeName = _getSizeName(sizeId);
-    final productImage = productDetail?['img1'] ?? '';
-    final totalPrice = price * quantity;
+
+    // Xử lý hình ảnh - thử nhiều key có thể
+    String productImage = '';
+    if (productDetail != null) {
+      productImage =
+          productDetail['img1'] ??
+          productDetail['image'] ??
+          productDetail['img'] ??
+          '';
+    }
+
+    final totalPrice =
+        (price is int ? price : int.tryParse(price.toString()) ?? 0) *
+        (quantity is int ? quantity : int.tryParse(quantity.toString()) ?? 1);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -447,16 +460,26 @@ class _CartScreenState extends State<CartScreen> {
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
-                        errorBuilder:
-                            (context, error, stackTrace) => Container(
-                              width: 80,
-                              height: 80,
-                              color: Colors.grey[200],
-                              child: const Icon(
-                                Icons.image,
-                                color: Colors.grey,
-                              ),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          print('Image error: $error');
+                          return Container(
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.image, color: Colors.grey),
+                          );
+                        },
                       )
                       : Container(
                         width: 80,

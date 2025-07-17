@@ -258,7 +258,7 @@ class CartService {
     }
   }
 
-  /// Lấy danh sách sản phẩm trong giỏ hàng
+  /// Lấy danh sách sản phẩm trong giỏ hàng với thông tin chi tiết
   static Future<List<Map<String, dynamic>>> getCartItems() async {
     try {
       final sessionId = await getSessionId();
@@ -272,61 +272,114 @@ class CartService {
         return [];
       }
 
-      final res = await http.get(
-        Uri.parse('$baseUrl/cart-items/carts/$cartId'),
-        headers: {'Content-Type': 'application/json'},
-      );
+      // Thử các endpoint có thể để lấy cart items với thông tin sản phẩm
+      List<String> endpoints = [
+        '$baseUrl/cart-items/carts/$cartId/detail', // Endpoint có thông tin sản phẩm
+        '$baseUrl/carts/$cartId/items', // Endpoint khác
+        '$baseUrl/cart-items/carts/$cartId', // Endpoint hiện tại
+      ];
 
-      print('getCartItems - Response status: ${res.statusCode}');
-      print('getCartItems - Full response body: ${res.body}');
+      for (String endpoint in endpoints) {
+        try {
+          print('Trying endpoint: $endpoint');
+          final res = await http.get(
+            Uri.parse(endpoint),
+            headers: {'Content-Type': 'application/json'},
+          );
 
-      if (res.statusCode == 200) {
-        final decoded = jsonDecode(res.body);
-        print('getCartItems - Decoded type: ${decoded.runtimeType}');
-        print('getCartItems - Decoded content: $decoded');
+          print('Response status: ${res.statusCode}');
+          print('Response body: ${res.body}');
 
-        List<Map<String, dynamic>> items = [];
+          if (res.statusCode == 200) {
+            final decoded = jsonDecode(res.body);
 
-        if (decoded is Map<String, dynamic>) {
-          // Kiểm tra các key có thể chứa cart items
-          if (decoded['data'] is List) {
-            items = List<Map<String, dynamic>>.from(decoded['data']);
-            print('getCartItems - Found items in data: ${items.length}');
-          } else if (decoded['cart_items'] is List) {
-            items = List<Map<String, dynamic>>.from(decoded['cart_items']);
-            print('getCartItems - Found items in cart_items: ${items.length}');
-          } else if (decoded['items'] is List) {
-            items = List<Map<String, dynamic>>.from(decoded['items']);
-            print('getCartItems - Found items in items: ${items.length}');
-          } else {
-            // Nếu response chỉ chứa 1 item duy nhất
-            items = [Map<String, dynamic>.from(decoded)];
-            print('getCartItems - Single item found');
+            List<Map<String, dynamic>> items = [];
+
+            if (decoded is Map<String, dynamic>) {
+              if (decoded['data'] is List) {
+                items = List<Map<String, dynamic>>.from(decoded['data']);
+              } else if (decoded['cart_items'] is List) {
+                items = List<Map<String, dynamic>>.from(decoded['cart_items']);
+              } else if (decoded['items'] is List) {
+                items = List<Map<String, dynamic>>.from(decoded['items']);
+              }
+            } else if (decoded is List) {
+              items = List<Map<String, dynamic>>.from(decoded);
+            }
+
+            if (items.isNotEmpty) {
+              // Enriching items với thông tin sản phẩm nếu chưa có
+              List<Map<String, dynamic>> enrichedItems = [];
+
+              for (var item in items) {
+                print('Processing item: $item');
+
+                // Nếu item đã có đầy đủ thông tin sản phẩm
+                if (item['product_detail'] != null &&
+                    item['product_detail']['name'] != null) {
+                  enrichedItems.add(item);
+                } else {
+                  // Nếu chưa có, lấy thông tin từ product_detail_id
+                  final productDetailId = item['product_detail_id'];
+                  if (productDetailId != null) {
+                    final productDetail = await _getProductDetailById(
+                      productDetailId,
+                    );
+                    if (productDetail != null) {
+                      item['product_detail'] = productDetail;
+                    }
+                  }
+                  enrichedItems.add(item);
+                }
+              }
+
+              print('Found ${enrichedItems.length} enriched items');
+              return enrichedItems;
+            }
           }
-        } else if (decoded is List) {
-          items = List<Map<String, dynamic>>.from(decoded);
-          print('getCartItems - Direct list found: ${items.length}');
+        } catch (e) {
+          print('Error with endpoint $endpoint: $e');
+          continue;
         }
-
-        // Debug từng item
-        for (int i = 0; i < items.length; i++) {
-          print('Item $i: ${items[i]}');
-          print('Item $i keys: ${items[i].keys.toList()}');
-        }
-
-        return items;
-      } else if (res.statusCode == 404) {
-        print('getCartItems - Cart not found (404)');
-        return [];
-      } else {
-        throw Exception(
-          'Lỗi khi lấy cart items: ${res.statusCode} - ${res.body}',
-        );
       }
+
+      print('getCartItems - No items found');
+      return [];
     } catch (e) {
       print('Error in getCartItems: $e');
       return [];
     }
+  }
+
+  /// Helper method để lấy thông tin product detail theo ID
+  static Future<Map<String, dynamic>?> _getProductDetailById(
+    int productDetailId,
+  ) async {
+    try {
+      print('Getting product detail for ID: $productDetailId');
+
+      final res = await http.get(
+        Uri.parse('$baseUrl/prodetail/$productDetailId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('Product detail response: ${res.statusCode} - ${res.body}');
+
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+
+        if (decoded is Map<String, dynamic>) {
+          if (decoded['data'] != null) {
+            return Map<String, dynamic>.from(decoded['data']);
+          } else {
+            return Map<String, dynamic>.from(decoded);
+          }
+        }
+      }
+    } catch (e) {
+      print('Error getting product detail: $e');
+    }
+    return null;
   }
 
   static Future<void> updateCartItemQuantity(

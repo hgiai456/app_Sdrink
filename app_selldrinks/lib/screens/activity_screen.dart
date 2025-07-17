@@ -33,7 +33,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                 hintText: 'Nhập mã đơn hàng hoặc số điện thoại',
                 hintStyle: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                ).textTheme.bodyMedium?.copyWith(color: Color(0xFF808080)),
               ),
             ),
             actions: [
@@ -47,7 +47,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Color(0xFF383838),
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('Tìm kiếm'),
@@ -61,9 +61,7 @@ class _ActivityScreenState extends State<ActivityScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       builder: (context) {
         return DraggableScrollableSheet(
           expand: false,
@@ -71,10 +69,8 @@ class _ActivityScreenState extends State<ActivityScreen>
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
               child: ListView(
                 controller: scrollController,
@@ -85,7 +81,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                       width: 50,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: Color(0xFF808080),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -94,6 +90,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                     'Chi tiết đơn hàng',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF383838),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -121,14 +118,15 @@ class _ActivityScreenState extends State<ActivityScreen>
               label,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+              ).textTheme.bodyMedium?.copyWith(color: Color(0xFF808080)),
             ),
           ),
           Text(
             value,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF383838),
+            ),
           ),
         ],
       ),
@@ -138,39 +136,96 @@ class _ActivityScreenState extends State<ActivityScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF5F5F5),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF383838),
+        elevation: 0,
         title: Row(
           children: [
-            Icon(Icons.coffee, color: Theme.of(context).iconTheme.color),
-            const SizedBox(width: 4),
+            Icon(Icons.coffee, color: Colors.white, size: 24),
+            const SizedBox(width: 8),
             Text(
               '0',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18,
+              ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
+            icon: Icon(Icons.search, color: Colors.white, size: 24),
             onPressed: _showSearchDialog,
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Theme.of(context).scaffoldBackgroundColor,
-          labelColor: Theme.of(context).scaffoldBackgroundColor,
-          unselectedLabelColor: Theme.of(context).scaffoldBackgroundColor,
-          tabs: const [Tab(text: 'Đơn Đặt Hàng'), Tab(text: 'Điểm Drips')],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: Container(
+            margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: Color(0xFF383838),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.white,
+              unselectedLabelColor: Color(0xFF808080),
+              labelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              unselectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: [
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.receipt, size: 18),
+                      SizedBox(width: 6),
+                      Text('Đơn Đặt Hàng'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.stars, size: 18),
+                      SizedBox(width: 6),
+                      Text('Điểm Drips'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildOrdersTab(),
-          const Center(child: Text('Tab điểm Drips')),
-        ],
+        children: [_buildOrdersTab(), _buildDripsTab()],
       ),
     );
   }
@@ -188,32 +243,95 @@ class _ActivityScreenState extends State<ActivityScreen>
             child:
                 totalOrders == 0
                     ? Center(
-                      child: Text(
-                        'Không Có Dữ Liệu.',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long,
+                            size: 64,
+                            color: Color(0xFF808080),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Không Có Dữ Liệu.',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleLarge?.copyWith(
+                              color: Color(0xFF808080),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Bạn chưa có đơn hàng nào',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Color(0xFF808080)),
+                          ),
+                        ],
                       ),
                     )
                     : ListView.builder(
                       itemCount: totalOrders,
                       itemBuilder:
-                          (context, index) => Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
+                          (context, index) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            elevation: 2,
                             child: ListTile(
-                              leading: Icon(
-                                Icons.receipt,
-                                color: Theme.of(context).primaryColor,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
-                              title: Text('Đơn hàng #${index + 1}'),
-                              subtitle: Text('Khách hàng: Nguyễn Văn A'),
-                              trailing: Icon(
-                                Icons.chevron_right,
-                                color: Theme.of(context).iconTheme.color,
+                              leading: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFF5F5F5),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.receipt,
+                                  color: Color(0xFF383838),
+                                  size: 20,
+                                ),
+                              ),
+                              title: Text(
+                                'Đơn hàng #${index + 1}',
+                                style: TextStyle(
+                                  color: Color(0xFF383838),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'Khách hàng: Nguyễn Văn A',
+                                  style: TextStyle(
+                                    color: Color(0xFF808080),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              trailing: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFF5F5F5),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.chevron_right,
+                                  color: Color(0xFF808080),
+                                  size: 20,
+                                ),
                               ),
                               onTap: _showOrderDetailBottomSheet,
                             ),
@@ -221,6 +339,32 @@ class _ActivityScreenState extends State<ActivityScreen>
                     ),
           ),
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDripsTab() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.stars, size: 64, color: Color(0xFF808080)),
+          SizedBox(height: 16),
+          Text(
+            'Điểm Drips',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Color(0xFF383838),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Tính năng đang phát triển',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Color(0xFF808080)),
+          ),
         ],
       ),
     );
