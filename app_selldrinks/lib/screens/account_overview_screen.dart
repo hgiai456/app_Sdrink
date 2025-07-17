@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_selldrinks/screens/profile_screen.dart';
 import 'package:app_selldrinks/screens/settings_screen.dart';
 import 'package:app_selldrinks/screens/priacypolicy_screen.dart';
+import 'package:app_selldrinks/screens/login_Screen.dart';
 
 //Hồ sơ
 class AccountOverviewScreen extends StatefulWidget {
@@ -459,7 +460,7 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _showLogoutDialog,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF383838),
                       shape: RoundedRectangleBorder(
@@ -484,6 +485,48 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Đăng Xuất'),
+          content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Đăng Xuất'),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('token');
+                await prefs.remove('firstName');
+                await prefs.remove('lastName');
+                await prefs.remove('email');
+                await prefs.remove('phone');
+                await prefs.remove('address');
+                await prefs.remove('dob');
+                await prefs.remove('gender');
+                await prefs.remove('isVerified');
+                await prefs.remove('createdAt');
+                await prefs.remove('updatedAt');
+
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
