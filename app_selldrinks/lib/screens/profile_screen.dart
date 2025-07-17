@@ -90,9 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFEBE5), // Nâu nhạt
+      backgroundColor: const Color(0xFFF5F5F5), // Light Gray
       appBar: AppBar(
-        backgroundColor: const Color(0xFFA10F1A), // Đỏ đậm
+        backgroundColor: const Color(0xFF383838), // Dark Gray
         title: const Text(
           'Hồ Sơ',
           style: TextStyle(
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         centerTitle: true,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.brown),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -115,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFA10F1A),
+                  color: const Color(0xFF383838),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -125,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const CircleAvatar(
                           radius: 36,
-                          backgroundColor: Color(0xFFD32F2F), // Đỏ sáng
+                          backgroundColor: Color(0xFF808080), // Medium Gray
                           child: Icon(
                             Icons.person,
                             size: 48,
@@ -144,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: const Icon(
                               Icons.camera_alt,
                               size: 16,
-                              color: Color(0xFFA10F1A),
+                              color: Color(0xFF383838),
                             ),
                           ),
                         ),
@@ -182,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     fontFamily: 'Roboto',
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
-                                    color: Color(0xFFA10F1A),
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                               ),
@@ -239,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontFamily: 'RobotoSlab',
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color(0xFF4B2B1B),
+                      color: Color(0xFF383838),
                     ),
                   ),
                   isEditing
@@ -261,7 +261,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontFamily: 'RobotoSlab',
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF9E9E9E),
+                                color: Color(0xFF808080), // Medium Gray
                               ),
                             ),
                           ),
@@ -278,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             fontFamily: 'RobotoSlab',
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFFA10F1A),
+                            color: Color(0xFF383838),
                           ),
                         ),
                       ),
@@ -385,7 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontFamily: 'RobotoSlab',
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF4B2B1B),
+                  color: Color(0xFF383838),
                 ),
               ),
               const SizedBox(height: 8),
@@ -402,7 +402,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: Row(
                       children: const [
-                        Icon(Icons.flag, color: Colors.red, size: 20),
+                        Icon(Icons.flag, color: Color(0xFF383838), size: 20),
                         SizedBox(width: 4),
                         Text(
                           '+84',
@@ -485,7 +485,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontFamily: 'RobotoSlab',
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF4B2B1B),
+                  color: Color(0xFF383838),
                 ),
               ),
               const SizedBox(height: 8),
@@ -538,7 +538,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA10F1A),
+                      backgroundColor: const Color(0xFF383838),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -600,7 +600,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF9E9E9E),
+            color: Color(0xFF808080), // Medium Gray
           ),
         ),
         const SizedBox(height: 4),
@@ -637,7 +637,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF9E9E9E),
+            color: Color(0xFF808080), // Medium Gray
           ),
         ),
         const SizedBox(height: 4),
@@ -673,7 +673,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF9E9E9E),
+            color: Color(0xFF808080), // Medium Gray
           ),
         ),
         const SizedBox(height: 4),
@@ -722,7 +722,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF9E9E9E),
+            color: Color(0xFF808080), // Medium Gray
           ),
         ),
         const SizedBox(height: 4),
@@ -744,7 +744,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: const ColorScheme.light(
-                        primary: Color(0xFFA10F1A),
+                        primary: Color(0xFF383838),
                         onPrimary: Colors.white,
                         surface: Colors.white,
                         onSurface: Colors.black,
@@ -772,7 +772,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Color(0xFF000000),
                   ),
                 ),
-                const Icon(Icons.calendar_today, color: Color(0xFFA10F1A)),
+                const Icon(Icons.calendar_today, color: Color(0xFF383838)),
               ],
             ),
           ),

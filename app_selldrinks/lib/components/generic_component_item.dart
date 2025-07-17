@@ -42,7 +42,7 @@ class GenericItem extends StatelessWidget {
           ),
         ),
       ),
-      badgeColor: Colors.orange,
+      badgeColor: Color(0xFF383838), // Dark Gray
       onTap: onTap,
     );
   }
@@ -60,9 +60,13 @@ class GenericItem extends StatelessWidget {
         height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Colors.grey[100],
+          color: Color(0xFFF5F5F5), // Light Gray
         ),
-        child: Icon(Icons.receipt_long, size: 40, color: Colors.grey[600]),
+        child: Icon(
+          Icons.receipt_long,
+          size: 40,
+          color: Color(0xFF808080),
+        ), // Medium Gray
       ),
       badge: order.badge ?? _getStatusText(order.status ?? 'unknown'),
       badgeColor: _getStatusColor(order.status ?? 'unknown'),
@@ -112,7 +116,7 @@ class GenericItem extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: badgeColor ?? Colors.orange,
+                        color: badgeColor ?? Color(0xFF383838), // Dark Gray
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(8),
                           bottomRight: Radius.circular(8),
@@ -140,21 +144,27 @@ class GenericItem extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Color(0xFF383838), // Dark Gray
                     ),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       subtitle!,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF808080),
+                      ), // Medium Gray
                     ),
                   ],
                   if (description != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       description!,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF808080),
+                      ), // Medium Gray
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -171,7 +181,7 @@ class GenericItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Color(0xFF383838), // Dark Gray
                   ),
                 ),
               ],
@@ -202,7 +212,7 @@ class GenericItem extends StatelessWidget {
       case 'cancelled':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Color(0xFF808080); // Medium Gray
     }
   }
 

@@ -99,15 +99,15 @@ class _HomePageState extends State<HomePage> {
             height: 45,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFEFEAE5), // Màu nền nhạt
+              color: const Color(0xFFF5F5F5), // Màu nền nhạt
               border: Border.all(
-                color: const Color(0xFFA10F1A),
+                color: const Color(0xFF383838),
                 width: 2,
-              ), // Đỏ Highlands
+              ), // Dark Gray
             ),
             child: const Icon(
               Icons.person,
-              color: Color(0xFFA10F1A), // Đỏ Highlands
+              color: Color(0xFF383838), // Dark Gray
               size: 24,
             ),
           ),
@@ -133,12 +133,12 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Tìm kiếm sản phẩm...',
-                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                  hintStyle: TextStyle(color: Color(0xFF888080), fontSize: 14),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Icon(
                       Icons.search,
-                      color: Color(0xFF4B2B1B),
+                      color: Color(0xFF383838),
                       size: 20,
                     ),
                   ),
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFEAE5), // Màu nền nhạt
+              color: const Color(0xFFF5F5F5), // Màu nền nhạt
               borderRadius: BorderRadius.circular(12),
             ),
             child: Stack(
@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                 const Center(
                   child: Icon(
                     Icons.notifications_outlined,
-                    color: Color(0xFFA10F1A), // Đỏ Highlands
+                    color: Color(0xFF383838), // Dark Gray
                     size: 22,
                   ),
                 ),
@@ -184,9 +184,7 @@ class _HomePageState extends State<HomePage> {
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Color(
-                        0xFFA10F1A,
-                      ), // Đỏ Highlands thay vì đỏ thường
+                      color: Color(0xFF383838), // Dark Gray
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -241,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFFA10F1A),
+                              foregroundColor: const Color(0xFF383838),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 8,
@@ -284,8 +282,8 @@ class _HomePageState extends State<HomePage> {
                 shape: BoxShape.circle,
                 color:
                     _currentBannerIndex == index
-                        ? const Color(0xFFA10F1A) // Đỏ Highlands
-                        : Colors.grey[300],
+                        ? const Color(0xFF383838) // Dark Gray
+                        : Color(0xFF808080),
               ),
             ),
           ),
@@ -316,9 +314,9 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFFA10F1A),
-                    const Color(0xFF8B0E17),
-                  ], // Gradient đỏ Highlands
+                    const Color(0xFF383838),
+                    const Color(0xFF808080),
+                  ], // Gradient gray
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

@@ -22,12 +22,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.brown),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF383838)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Phản Hồi & Hỗ Trợ',
-          style: theme.textTheme.titleLarge?.copyWith(color: Color(0xFF4B2B1B)),
+          style: theme.textTheme.titleLarge?.copyWith(color: Color(0xFF383838)),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,

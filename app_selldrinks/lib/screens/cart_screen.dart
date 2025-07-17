@@ -45,12 +45,12 @@ class _CartScreenState extends State<CartScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFDA8359),
+        backgroundColor: const Color(0xFF383838),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: const Color(0xFFDA8359)),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed:
               () => Navigator.pushReplacement(
                 context,
@@ -61,7 +61,7 @@ class _CartScreenState extends State<CartScreen> {
           'Giỏ Hàng',
           style: theme.textTheme.titleLarge?.copyWith(
             fontSize: 18,
-            color: const Color(0xFFDA8359),
+            color: Colors.white,
           ),
         ),
         centerTitle: true,
@@ -70,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
             onPressed: () {},
             child: Text(
               'Xóa Giỏ Hàng',
-              style: TextStyle(color: const Color(0xFFDA8359), fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
           ),
         ],
@@ -106,6 +106,7 @@ class _CartScreenState extends State<CartScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
+                                color: Color(0xFF383838),
                               ),
                             ),
                             Spacer(),
@@ -151,7 +152,7 @@ class _CartScreenState extends State<CartScreen> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.primaryColor.withOpacity(0.1),
+                              color: Color(0xFFF5F5F5),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(12),
                                 topRight: Radius.circular(12),
@@ -160,7 +161,7 @@ class _CartScreenState extends State<CartScreen> {
                             child: Text(
                               'MANG RA TAI',
                               style: TextStyle(
-                                color: theme.primaryColor,
+                                color: Color(0xFF383838),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -183,6 +184,7 @@ class _CartScreenState extends State<CartScreen> {
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
+                                              color: Color(0xFF383838),
                                             ),
                                           ),
                                           SizedBox(height: 4),
@@ -190,7 +192,7 @@ class _CartScreenState extends State<CartScreen> {
                                             selectedStore?.fullAddress ?? '',
                                             style: TextStyle(
                                               fontSize: 12,
-                                              color: Colors.grey[600],
+                                              color: Color(0xFF808080),
                                             ),
                                           ),
                                         ],
@@ -201,7 +203,7 @@ class _CartScreenState extends State<CartScreen> {
                                       child: Text(
                                         'Thay Đổi',
                                         style: TextStyle(
-                                          color: theme.primaryColor,
+                                          color: Color(0xFF383838),
                                           fontSize: 14,
                                         ),
                                       ),
@@ -234,10 +236,16 @@ class _CartScreenState extends State<CartScreen> {
                       child: ListTile(
                         leading: Icon(
                           Icons.access_time,
-                          color: theme.primaryColor,
+                          color: Color(0xFF383838),
                         ),
-                        title: Text('Hôm nay | Trong 15 phút'),
-                        trailing: Icon(Icons.chevron_right),
+                        title: Text(
+                          'Hôm nay | Trong 15 phút',
+                          style: TextStyle(color: Color(0xFF383838)),
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right,
+                          color: Color(0xFF808080),
+                        ),
                         onTap: () {},
                       ),
                     ),
@@ -250,11 +258,11 @@ class _CartScreenState extends State<CartScreen> {
                       child: ListTile(
                         leading: Icon(
                           Icons.note_alt_outlined,
-                          color: Colors.grey,
+                          color: Color(0xFF808080),
                         ),
                         title: Text(
                           'Ghi Chú Đơn Hàng',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Color(0xFF808080)),
                         ),
                         onTap: () {},
                       ),
@@ -287,6 +295,7 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                                 Spacer(),
@@ -294,7 +303,7 @@ class _CartScreenState extends State<CartScreen> {
                                   onPressed: () {},
                                   child: Text(
                                     'Thêm Sản Phẩm',
-                                    style: TextStyle(color: theme.primaryColor),
+                                    style: TextStyle(color: Color(0xFF383838)),
                                   ),
                                 ),
                               ],
@@ -322,7 +331,7 @@ class _CartScreenState extends State<CartScreen> {
                               });
                             },
                           ),
-                          Divider(),
+                          Divider(color: Color(0xFF808080)),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Row(
@@ -332,6 +341,7 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                                 Spacer(),
@@ -340,12 +350,13 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Divider(),
+                          Divider(color: Color(0xFF808080)),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Row(
@@ -355,6 +366,7 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                                 Spacer(),
@@ -362,13 +374,13 @@ class _CartScreenState extends State<CartScreen> {
                                   onPressed: () {},
                                   child: Text(
                                     'Thêm Khuyến Mãi',
-                                    style: TextStyle(color: theme.primaryColor),
+                                    style: TextStyle(color: Color(0xFF383838)),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Divider(),
+                          Divider(color: Color(0xFF808080)),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Row(
@@ -378,7 +390,7 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: theme.primaryColor,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                                 Spacer(),
@@ -387,7 +399,7 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: theme.primaryColor,
+                                    color: Color(0xFF383838),
                                   ),
                                 ),
                               ],
@@ -431,7 +443,7 @@ class _CartScreenState extends State<CartScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: theme.primaryColor),
+                          border: Border.all(color: Color(0xFF383838)),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
@@ -439,14 +451,14 @@ class _CartScreenState extends State<CartScreen> {
                           children: [
                             Icon(
                               Icons.credit_card,
-                              color: theme.primaryColor,
+                              color: Color(0xFF383838),
                               size: 16,
                             ),
                             SizedBox(width: 4),
                             Text(
                               'Thẻ Nội Địa',
                               style: TextStyle(
-                                color: theme.primaryColor,
+                                color: Color(0xFF383838),
                                 fontSize: 12,
                               ),
                             ),
@@ -463,7 +475,7 @@ class _CartScreenState extends State<CartScreen> {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
+                          backgroundColor: Color(0xFF383838),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -473,6 +485,7 @@ class _CartScreenState extends State<CartScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -495,16 +508,16 @@ class _CartScreenState extends State<CartScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? theme.primaryColor : Colors.white,
+          color: isSelected ? Color(0xFF383838) : Colors.white,
           border: Border.all(
-            color: theme.primaryColor.withOpacity(isSelected ? 1 : 0.3),
+            color: Color(0xFF383838).withOpacity(isSelected ? 1 : 0.3),
           ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? Colors.white : theme.primaryColor,
+            color: isSelected ? Colors.white : Color(0xFF383838),
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -529,14 +542,14 @@ class _CartScreenState extends State<CartScreen> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
+              border: Border.all(color: Color(0xFF383838).withOpacity(0.3)),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.remove, color: theme.primaryColor),
+                  icon: Icon(Icons.remove, color: Color(0xFF383838)),
                   onPressed: () {
                     if (quantity > 1) onQuantityChanged(quantity - 1);
                   },
@@ -547,14 +560,14 @@ class _CartScreenState extends State<CartScreen> {
                 SizedBox(width: 8),
                 Text(
                   quantity.toString(),
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: theme.primaryColor,
+                    color: Color(0xFF383838),
                   ),
                 ),
                 SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.add, color: theme.primaryColor),
+                  icon: Icon(Icons.add, color: Color(0xFF383838)),
                   onPressed: () => onQuantityChanged(quantity + 1),
                   iconSize: 20,
                   padding: EdgeInsets.zero,
@@ -570,24 +583,20 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 Text(
                   name,
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
                     fontWeight: FontWeight.w500,
+                    color: Color(0xFF383838),
                   ),
                 ),
-                Text(
-                  size,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
+                Text(size, style: TextStyle(color: Color(0xFF808080))),
               ],
             ),
           ),
           Text(
             '${(price * quantity).toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ',
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: theme.primaryColor,
+              color: Color(0xFF383838),
             ),
           ),
         ],
@@ -607,14 +616,24 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text(
                 'Chọn Cửa Hàng',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF383838),
+                ),
               ),
               SizedBox(height: 16),
               ...stores
                   .map(
                     (store) => ListTile(
-                      title: Text(store.name),
-                      subtitle: Text(store.fullAddress),
+                      title: Text(
+                        store.name,
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      subtitle: Text(
+                        store.fullAddress,
+                        style: TextStyle(color: Color(0xFF808080)),
+                      ),
                       leading: Radio<Store>(
                         value: store,
                         groupValue: selectedStore,

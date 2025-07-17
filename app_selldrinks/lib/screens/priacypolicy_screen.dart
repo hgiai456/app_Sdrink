@@ -13,7 +13,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: Color(0xFF4B2B1B),
+            color: Color(0xFF383838),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -22,7 +22,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           'Chính Sách Bảo Mật',
           style: theme.textTheme.titleLarge?.copyWith(
             fontSize: 18,
-            color: Color(0xFF4B2B1B),
+            color: Color(0xFF383838),
           ),
         ),
         centerTitle: true,

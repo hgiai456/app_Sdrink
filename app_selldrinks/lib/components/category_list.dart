@@ -48,7 +48,7 @@ class _CategoryListState extends State<CategoryList> {
   Widget _buildCategoryList(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFA10F1A)),
+        child: CircularProgressIndicator(color: Color(0xFF383838)), // Dark Gray
       );
     }
 
@@ -78,7 +78,7 @@ class _CategoryListState extends State<CategoryList> {
       return const Center(
         child: Text(
           'Không có danh mục nào',
-          style: TextStyle(color: Color(0xFF4B2B1B), fontSize: 14),
+          style: TextStyle(color: Color(0xFF383838), fontSize: 14), // Dark Gray
         ),
       );
     }
@@ -111,13 +111,13 @@ class _CategoryListState extends State<CategoryList> {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFEAE5), // Màu nền nhạt từ theme
+                    color: const Color(0xFFF5F5F5), // Light Gray
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: const Color(
-                        0xFFA10F1A,
-                      ).withAlpha((255 * 0.3).round()),
-                    ), // Đỏ Highlands nhạt
+                        0xFF383838,
+                      ).withAlpha((255 * 0.3).round()), // Dark Gray nhạt
+                    ),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
@@ -131,12 +131,12 @@ class _CategoryListState extends State<CategoryList> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFEAE5),
+                            color: const Color(0xFFF5F5F5), // Light Gray
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(
                             _getCategoryIcon(category.name),
-                            color: const Color(0xFFA10F1A),
+                            color: const Color(0xFF383838), // Dark Gray
                             size: 28,
                           ),
                         );
@@ -147,13 +147,13 @@ class _CategoryListState extends State<CategoryList> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFEAE5),
+                            color: const Color(0xFFF5F5F5), // Light Gray
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: const Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFFA10F1A),
+                              color: Color(0xFF383838), // Dark Gray
                             ),
                           ),
                         );
@@ -167,7 +167,7 @@ class _CategoryListState extends State<CategoryList> {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF4B2B1B), // Màu nâu từ theme
+                    color: Color(0xFF383838), // Dark Gray
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,

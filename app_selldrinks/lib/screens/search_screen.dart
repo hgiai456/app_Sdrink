@@ -13,7 +13,7 @@ class SearchScreen extends StatelessWidget {
           icon: Icon(
             Icons.arrow_back_ios,
             color: Theme.of(context).textTheme.bodyMedium?.color,
-          ), // #4B2B1B, kiểu iOS
+          ), // #383838, kiểu iOS
           onPressed: () {
             Navigator.pop(context); // Tùy chọn, có thể bỏ
           },
@@ -23,7 +23,7 @@ class SearchScreen extends StatelessWidget {
             hintText: 'Tìm Kiếm Tên Món Ăn',
             hintStyle: TextStyle(
               color: Theme.of(context).inputDecorationTheme.labelStyle?.color,
-            ), // #4B2B1B
+            ), // #383838
             border: Theme.of(context).inputDecorationTheme.border,
             focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
             filled: true,
@@ -31,7 +31,7 @@ class SearchScreen extends StatelessWidget {
             suffixIcon: Icon(
               Icons.search,
               color: Theme.of(context).inputDecorationTheme.labelStyle?.color,
-            ), // #4B2B1B
+            ), // #383838
           ),
         ),
         actions: [], // Không có icon trạng thái

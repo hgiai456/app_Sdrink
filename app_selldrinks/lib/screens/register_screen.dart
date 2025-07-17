@@ -135,13 +135,13 @@ class _RegisterScreen extends State<RegisterScreen> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4B2B1B),
+                    color: Color(0xFF383838),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Đăng ký để trải nghiệm GH Coffee',
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 16, color: Color(0xFF808080)),
                 ),
                 const SizedBox(height: 40),
 
@@ -149,9 +149,9 @@ class _RegisterScreen extends State<RegisterScreen> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: Color(0xFF808080)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade700,
+                          color: Color(0xFF383838),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -176,7 +176,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     : null,
                         prefixIcon: Icon(
                           Icons.person_outline,
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF808080),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -191,7 +191,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                               validator: _validateEmail,
                               prefixIcon: Icon(
                                 Icons.email_outlined,
-                                color: Colors.grey.shade600,
+                                color: Color(0xFF808080),
                               ),
                             ),
                           ),
@@ -204,7 +204,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                               validator: _validatePhone,
                               prefixIcon: Icon(
                                 Icons.phone_outlined,
-                                color: Colors.grey.shade600,
+                                color: Color(0xFF808080),
                               ),
                             ),
                           ),
@@ -219,7 +219,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         maxLines: 2,
                         prefixIcon: Icon(
                           Icons.location_on_outlined,
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF808080),
                         ),
                       ),
                     ],
@@ -231,9 +231,9 @@ class _RegisterScreen extends State<RegisterScreen> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: Color(0xFF808080)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +243,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade700,
+                          color: Color(0xFF383838),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -255,7 +255,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         validator: _validatePassword,
                         prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF808080),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -267,7 +267,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         validator: _validateComfirmPassword,
                         prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF808080),
                         ),
                       ),
                     ],
@@ -281,7 +281,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _submitRegister,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4B2B1B),
+                      backgroundColor: const Color(0xFF383838),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -314,20 +314,20 @@ class _RegisterScreen extends State<RegisterScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Divider(color: Colors.grey.shade300, thickness: 1),
+                      child: Divider(color: Color(0xFF808080), thickness: 1),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Hoặc đăng ký bằng',
                         style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: Color(0xFF808080),
                           fontSize: 14,
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Divider(color: Colors.grey.shade300, thickness: 1),
+                      child: Divider(color: Color(0xFF808080), thickness: 1),
                     ),
                   ],
                 ),
@@ -347,10 +347,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey.shade300),
+                          border: Border.all(color: Color(0xFF808080)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.shade200,
+                              color: Color(0xFF808080),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -377,10 +377,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey.shade300),
+                          border: Border.all(color: Color(0xFF808080)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.shade200,
+                              color: Color(0xFF808080),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -404,10 +404,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                   children: [
                     Text(
                       'Đã có tài khoản? ',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Color(0xFF808080), fontSize: 14),
                     ),
                     TextButton(
                       onPressed: () {
@@ -426,7 +423,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                       child: const Text(
                         'Đăng nhập',
                         style: TextStyle(
-                          color: Color(0xFF4B2B1B),
+                          color: Color(0xFF383838),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),

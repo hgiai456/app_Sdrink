@@ -56,7 +56,7 @@ class _FAQScreenState extends State<FAQScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF4B2B1B)),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF383838)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('Câu Hỏi Thường Gặp', style: theme.textTheme.titleLarge),
@@ -85,12 +85,12 @@ class _FAQScreenState extends State<FAQScreen> {
                         });
                       },
                       backgroundColor: Colors.white,
-                      selectedColor: const Color(0xFFFFF3CD),
+                      selectedColor: const Color(0xFFF5F5F5),
                       labelStyle: TextStyle(
                         color:
                             _selectedTabIndex == index
                                 ? theme.primaryColor
-                                : Colors.grey,
+                                : Color(0xFF808080),
                         fontWeight: FontWeight.w500,
                       ),
                       shape: RoundedRectangleBorder(
@@ -99,7 +99,7 @@ class _FAQScreenState extends State<FAQScreen> {
                           color:
                               _selectedTabIndex == index
                                   ? theme.primaryColor
-                                  : Colors.grey.shade300,
+                                  : Color(0xFF808080),
                         ),
                       ),
                     ),
@@ -116,13 +116,13 @@ class _FAQScreenState extends State<FAQScreen> {
                   title: Text(
                     _faqItems[index].question,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: const Color(0xFF4B2B1B),
+                      color: const Color(0xFF383838),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   trailing: const Icon(Icons.keyboard_arrow_down),
-                  iconColor: const Color(0xFF4B2B1B),
-                  collapsedIconColor: const Color(0xFF4B2B1B),
+                  iconColor: const Color(0xFF383838),
+                  collapsedIconColor: const Color(0xFF383838),
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16),

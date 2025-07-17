@@ -36,12 +36,12 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(170),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFDA8359), // Header cam đất
+            color: const Color(0xFF383838), // Header xám đậm
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(32),
               bottomRight: Radius.circular(32),
@@ -102,7 +102,7 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                             child: Icon(
                               Icons.person,
                               size: 36,
-                              color: Color(0xFFA10F1A),
+                              color: Color(0xFF383838),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -173,7 +173,7 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFFA10F1A),
+                              foregroundColor: const Color(0xFF383838),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -216,19 +216,32 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(
                         Icons.person,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
                       title: const Text(
                         'Hồ Sơ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF383838),
+                        ),
                       ),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () async {
                         await Navigator.push(
                           context,
@@ -239,17 +252,23 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                         _loadName(); // Reload tên khi quay lại
                       },
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: Color(0xFFF5F5F5)),
                     ListTile(
                       leading: const Icon(
                         Icons.settings,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
                       title: const Text(
                         'Cài Đặt',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF383838),
+                        ),
                       ),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -270,7 +289,11 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 ),
                 child: const Text(
                   'Thông Tin Chung',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF383838),
+                  ),
                 ),
               ),
               Container(
@@ -278,16 +301,29 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(
                         Icons.description,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
-                      title: const Text('Điều khoản dịch vụ'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: const Text(
+                        'Điều khoản dịch vụ',
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -297,14 +333,20 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                         );
                       },
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: Color(0xFFF5F5F5)),
                     ListTile(
                       leading: const Icon(
                         Icons.privacy_tip,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
-                      title: const Text('Chính sách bảo mật'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: const Text(
+                        'Chính sách bảo mật',
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -314,11 +356,17 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                         );
                       },
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: Color(0xFFF5F5F5)),
                     ListTile(
-                      leading: const Icon(Icons.info, color: Color(0xFFA10F1A)),
-                      title: const Text('Giới Thiệu Về Phiên Bản Ứng Dụng'),
-                      trailing: const Icon(Icons.chevron_right),
+                      leading: const Icon(Icons.info, color: Color(0xFF383838)),
+                      title: const Text(
+                        'Giới Thiệu Về Phiên Bản Ứng Dụng',
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: null,
                     ),
                   ],
@@ -332,7 +380,11 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 ),
                 child: const Text(
                   'Trung Tâm Trợ Giúp',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF383838),
+                  ),
                 ),
               ),
               Container(
@@ -340,16 +392,29 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(
                         Icons.live_help,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
-                      title: const Text('Câu Hỏi Thường Gặp'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: const Text(
+                        'Câu Hỏi Thường Gặp',
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -359,14 +424,20 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                         );
                       },
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: Color(0xFFF5F5F5)),
                     ListTile(
                       leading: const Icon(
                         Icons.feedback,
-                        color: Color(0xFFA10F1A),
+                        color: Color(0xFF383838),
                       ),
-                      title: const Text('Phản Hồi & Hỗ Trợ'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: const Text(
+                        'Phản Hồi & Hỗ Trợ',
+                        style: TextStyle(color: Color(0xFF383838)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF808080),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -390,11 +461,12 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA10F1A),
+                      backgroundColor: const Color(0xFF383838),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 2,
                     ),
                     child: const Text(
                       'ĐĂNG XUẤT',

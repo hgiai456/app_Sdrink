@@ -55,80 +55,161 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (Route<dynamic> route) => false,
-            );
-          },
+        leading: Container(
+          margin: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.close, color: Color(0xFF383838), size: 20),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
         ),
         title: Text(
-          widget.categoryName ?? "Tất cả sản  phẩm",
+          widget.categoryName ?? "Tất cả sản phẩm",
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyMedium!.color,
-            fontSize: 16,
+            color: Color(0xFF383838),
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
-            onPressed: () {
-              //Xử lý sự kiện click
-            },
+          Container(
+            margin: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.search, color: Color(0xFF383838), size: 20),
+              onPressed: () {
+                //Xử lý sự kiện click
+              },
+            ),
           ),
         ],
       ),
       body: Column(
         children: [
+          // Filter và Layout Controls
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCCCCCC)),
-                    borderRadius: BorderRadius.circular(4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  child: Icon(
-                    Icons.tune,
-                    size: 20,
-                    color: Theme.of(context).iconTheme.color,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color(0xFF808080).withOpacity(0.3),
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Color(0xFFF5F5F5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.tune, size: 18, color: Color(0xFF383838)),
+                      SizedBox(width: 6),
+                      Text(
+                        'Lọc',
+                        style: TextStyle(
+                          color: Color(0xFF383838),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCCCCCC)),
-                    borderRadius: BorderRadius.circular(4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  child: Icon(
-                    Icons.apps,
-                    size: 20,
-                    color: Theme.of(context).iconTheme.color,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color(0xFF808080).withOpacity(0.3),
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Color(0xFFF5F5F5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.apps, size: 18, color: Color(0xFF383838)),
+                      SizedBox(width: 6),
+                      Text(
+                        'Grid',
+                        style: TextStyle(
+                          color: Color(0xFF383838),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+
+          // Product Count
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Text(
+                  '${products.length} sản phẩm',
+                  style: TextStyle(
+                    color: Color(0xFF808080),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Products List
           Expanded(
             child:
                 isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFFA10F1A),
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            color: Color(0xFF383838),
+                            strokeWidth: 3,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Đang tải sản phẩm...',
+                            style: TextStyle(
+                              color: Color(0xFF808080),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                     : products.isEmpty
@@ -136,17 +217,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.inventory_2_outlined,
-                            size: 64,
-                            color: Colors.grey[400],
+                          Container(
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Icon(
+                              Icons.inventory_2_outlined,
+                              size: 48,
+                              color: Color(0xFF808080),
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Không có sản phẩm nào',
                             style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF383838),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -156,7 +245,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 : 'Hãy thêm sản phẩm mới',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[500],
+                              color: Color(0xFF808080),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -164,31 +253,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     )
                     : ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       itemCount: products.length,
                       itemBuilder: (context, index) {
-                        return ProductItem(
-                          product: products[index],
-                          onTap: () {
-                            //Xử lý sự kiện khi nhấn vào 1 product trong Product_list_screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => ProductDetailScreen(
-                                      productId: products[index].id,
-                                    ),
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Đã chọn ${products[index].name}',
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 12),
+                          child: ProductItem(
+                            product: products[index],
+                            onTap: () {
+                              //Xử lý sự kiện khi nhấn vào 1 product trong Product_list_screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => ProductDetailScreen(
+                                        productId: products[index].id,
+                                      ),
                                 ),
-                                backgroundColor: Theme.of(context).primaryColor,
-                                duration: const Duration(seconds: 1),
-                              ),
-                            );
-                          },
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Đã chọn ${products[index].name}',
+                                  ),
+                                  backgroundColor: Color(0xFF383838),
+                                  duration: const Duration(seconds: 1),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
@@ -196,13 +296,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
         ],
       ),
       bottomSheet: Container(
-        height: 60,
-        color: Theme.of(context).primaryColor,
+        height: 70,
+        decoration: BoxDecoration(
+          color: Color(0xFF383838),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Icon(Icons.location_on, color: Colors.white),
-            const SizedBox(width: 8),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.location_on, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -210,24 +330,46 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 children: [
                   const Text(
                     'Mang Về',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   Text(
                     '35 Thang Long Tan Binh HCMC',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-            const SizedBox(width: 8),
             Container(
-              padding: const EdgeInsets.all(8),
-              child: const Icon(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
                 Icons.shopping_bag_outlined,
                 color: Colors.white,
+                size: 20,
               ),
             ),
             const SizedBox(width: 16),

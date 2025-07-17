@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF4B2B1B),
+                  color: Color(0xFF383838),
                 ),
               ),
               SizedBox(height: 40),
@@ -108,24 +108,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController, //gán controller để qly
                 decoration: InputDecoration(
                   hintText: 'Email hoặc số điện thoại',
-                  hintStyle: TextStyle(color: Colors.grey.shade500), // chữ mờ
+                  hintStyle: TextStyle(color: Color(0xFF808080)), // chữ mờ
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8), // bo góc 8px
                     borderSide: BorderSide(
-                      color: Colors.grey.shade300, // màu viền
+                      color: Color(0xFF80880), // màu viền
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     // viền khi enabled nhưng không focus
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: Colors.grey.shade300,
+                      color: Color(0xFF808080),
                     ), // màu viền khi focus
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: Colors.red.shade600, // màu viền khi focus
+                      color: Color(0xFF383838), // màu viền khi focus
                     ),
                   ),
 
@@ -146,18 +146,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     _obscurePassword, // Ẩn/hiện mật khẩu dựa vào biến boolean
                 decoration: InputDecoration(
                   hintText: 'Mật Khẩu',
-                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                  hintStyle: TextStyle(color: Color(0xFF808080)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Color(0xFF808080)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Color(0xFF808080)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.red.shade700),
+                    borderSide: BorderSide(color: Color(0xFF383838)),
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 16,
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.grey.shade600,
+                      color: Color(0xFF808080),
                     ),
                     onPressed: () {
                       setState(() {
@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Ghi nhớ tôi',
                             style: TextStyle(
-                              color: Colors.grey.shade700,
+                              color: Color(0xFF808080),
                               fontSize: 14,
                             ),
                           ),
@@ -260,20 +260,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: Colors.grey.shade400),
+                    child: Divider(color: Color(0xFF808080)),
                   ), // Đường kẻ bên trái
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'hoặc',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Color(0xFF808080), fontSize: 14),
                     ),
                   ),
                   Expanded(
-                    child: Divider(color: Colors.grey.shade400),
+                    child: Divider(color: Color(0xFF808080)),
                   ), // Đường kẻ bên phải
                 ],
               ),
@@ -290,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: Color(0xFF808080)),
                     ),
                     child: Center(
                       child: Image.asset(
@@ -306,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: Color(0xFF808080)),
                     ),
                     child: Center(
                       child: Image.asset(

@@ -63,7 +63,7 @@ class _BestSellerListState extends State<BestSellerList> {
                 'Bán chạy nhất',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF4B2B1B), // Màu nâu từ theme
+                  color: const Color(0xFF383838), // Dark Gray
                 ),
               ),
               TextButton(
@@ -72,7 +72,7 @@ class _BestSellerListState extends State<BestSellerList> {
                 },
                 child: const Text(
                   'Xem tất cả',
-                  style: TextStyle(color: Color(0xFFA10F1A)), // Đỏ Highlands
+                  style: TextStyle(color: Color(0xFF383838)), // Dark Gray
                 ),
               ),
             ],
@@ -89,7 +89,7 @@ class _BestSellerListState extends State<BestSellerList> {
   Widget _buildProductList() {
     if (_isLoadingProducts) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFA10F1A)),
+        child: CircularProgressIndicator(color: Color(0xFF383838)), // Dark Gray
       );
     }
 
@@ -119,7 +119,7 @@ class _BestSellerListState extends State<BestSellerList> {
       return const Center(
         child: Text(
           'Không có sản phẩm nào',
-          style: TextStyle(color: Color(0xFF4B2B1B), fontSize: 14),
+          style: TextStyle(color: Color(0xFF383838), fontSize: 14), // Dark Gray
         ),
       );
     }
@@ -166,7 +166,7 @@ class _BestSellerListState extends State<BestSellerList> {
                       height: 100,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: const Color(0xFFF5F5F5), // Light Gray
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(16),
                         ),
@@ -191,7 +191,7 @@ class _BestSellerListState extends State<BestSellerList> {
                     //       vertical: 2,
                     //     ),
                     //     decoration: BoxDecoration(
-                    //       color: const Color(0xFFA10F1A),
+                    //       color: const Color(0xFF383838), // Dark Gray
                     //       borderRadius: BorderRadius.circular(8),
                     //     ),
                     //     child: const Text(
@@ -219,7 +219,7 @@ class _BestSellerListState extends State<BestSellerList> {
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: Color(0xFF4B2B1B), // Màu nâu từ theme
+                            color: Color(0xFF383838), // Dark Gray
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -240,7 +240,7 @@ class _BestSellerListState extends State<BestSellerList> {
                               '4.5', // Giá trị mặc định
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey[600],
+                                color: Color(0xFF808080), // Medium Gray
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -248,7 +248,7 @@ class _BestSellerListState extends State<BestSellerList> {
                               '(100+)', // Giá trị mặc định
                               style: TextStyle(
                                 fontSize: 10,
-                                color: Colors.grey[500],
+                                color: Color(0xFF808080), // Medium Gray
                               ),
                             ),
                           ],
@@ -264,7 +264,7 @@ class _BestSellerListState extends State<BestSellerList> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: Color(0xFFA10F1A), // Đỏ Highlands
+                                color: Color(0xFF383838), // Dark Gray
                               ),
                             ),
                             // Có thể thêm giá gốc nếu có logic giảm giá
@@ -286,11 +286,11 @@ class _BestSellerListState extends State<BestSellerList> {
   Widget _buildProductImage(String? imagePath, String productName) {
     if (imagePath == null || imagePath.isEmpty) {
       return Container(
-        color: Colors.grey[200],
+        color: const Color(0xFFF5F5F5), // Light Gray
         child: const Icon(
           Icons.image_not_supported,
           size: 40,
-          color: Colors.grey,
+          color: Color(0xFF808080), // Medium Gray
         ),
       );
     }
@@ -300,18 +300,22 @@ class _BestSellerListState extends State<BestSellerList> {
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
-          color: Colors.grey[200],
-          child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+          color: const Color(0xFFF5F5F5), // Light Gray
+          child: const Icon(
+            Icons.broken_image,
+            size: 40,
+            color: Color(0xFF808080),
+          ), // Medium Gray
         );
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Container(
-          color: Colors.grey[200],
+          color: const Color(0xFFF5F5F5), // Light Gray
           child: Center(
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: const Color(0xFFA10F1A),
+              color: const Color(0xFF383838), // Dark Gray
               value:
                   loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /

@@ -59,8 +59,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       maxLines: widget.maxLines,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16),
-
+        hintStyle: TextStyle(
+          color: Color(0xFF808080),
+          fontSize: 16,
+        ), // Medium Gray
         // Icon bên trái
         prefixIcon: widget.prefixIcon,
 
@@ -70,7 +72,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ? IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey.shade600,
+                    color: Color(0xFF808080), // Medium Gray
                   ),
                   onPressed: () {
                     setState(() {
@@ -89,7 +91,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           borderSide: BorderSide(
-            color: widget.borderColor ?? Colors.grey.shade300,
+            color: widget.borderColor ?? Color(0xFF808080), // Medium Gray
           ),
         ),
 
@@ -97,7 +99,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           borderSide: BorderSide(
-            color: widget.borderColor ?? Colors.grey.shade300,
+            color: widget.borderColor ?? Color(0xFF808080), // Medium Gray
           ),
         ),
 
@@ -105,7 +107,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           borderSide: BorderSide(
-            color: widget.focusedBorderColor ?? Colors.red.shade700,
+            color: widget.focusedBorderColor ?? Color(0xFF383838), // Dark Gray
             width: 2,
           ),
         ),
@@ -167,7 +169,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //     return Scaffold(
 //       appBar: AppBar(
 //         title: Text('Custom TextField Examples'),
-//         backgroundColor: Colors.red.shade700,
+//         backgroundColor: Color(0xFF383838), // Dark Gray
 //       ),
 //       body: Padding(
 //         padding: EdgeInsets.all(20),
@@ -177,7 +179,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //             CustomTextField(
 //               hintText: 'Nhập họ tên',
 //               controller: _nameController,
-//               prefixIcon: Icon(Icons.person, color: Colors.grey.shade600),
+//               prefixIcon: Icon(Icons.person, color: Color(0xFF808080)), // Medium Gray
 //             ),
             
 //             SizedBox(height: 16),
@@ -188,7 +190,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //               controller: _emailController,
 //               keyboardType: TextInputType.emailAddress,
 //               validator: _validateEmail,
-//               prefixIcon: Icon(Icons.email, color: Colors.grey.shade600),
+//               prefixIcon: Icon(Icons.email, color: Color(0xFF808080)), // Medium Gray
 //               onChanged: (value) {
 //                 print('Email changed: $value');
 //               },
@@ -201,9 +203,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //               hintText: 'Số điện thoại',
 //               controller: _phoneController,
 //               keyboardType: TextInputType.phone,
-//               prefixIcon: Icon(Icons.phone, color: Colors.grey.shade600),
-//               borderColor: Colors.blue.shade300,
-//               focusedBorderColor: Colors.blue.shade700,
+//               prefixIcon: Icon(Icons.phone, color: Color(0xFF808080)), // Medium Gray
+//               borderColor: Color(0xFF808080), // Medium Gray
+//               focusedBorderColor: Color(0xFF383838), // Dark Gray
 //             ),
             
 //             SizedBox(height: 16),
@@ -214,7 +216,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //               controller: _passwordController,
 //               isPassword: true,
 //               validator: _validatePassword,
-//               prefixIcon: Icon(Icons.lock, color: Colors.grey.shade600),
+//               prefixIcon: Icon(Icons.lock, color: Color(0xFF808080)), // Medium Gray
 //             ),
             
 //             SizedBox(height: 16),
@@ -223,8 +225,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //             CustomTextField(
 //               hintText: 'Ghi chú (tùy chỉnh)',
 //               maxLines: 3,
-//               borderColor: Colors.green.shade300,
-//               focusedBorderColor: Colors.green.shade700,
+//               borderColor: Color(0xFF808080), // Medium Gray
+//               focusedBorderColor: Color(0xFF383838), // Dark Gray
 //               borderRadius: 12,
 //               contentPadding: EdgeInsets.all(20),
 //             ),
@@ -241,7 +243,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 //               },
 //               child: Text('Test Values'),
 //               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Colors.red.shade700,
+//                 backgroundColor: Color(0xFF383838), // Dark Gray
 //               ),
 //             ),
 //           ],
