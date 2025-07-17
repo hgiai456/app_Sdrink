@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:app_selldrinks/models/product.dart';
+import 'package:app_selldrinks/models/product_detail_response.dart';
 import 'package:http/http.dart' as http;
 
 class ProductService {
@@ -75,7 +76,25 @@ class ProductService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print("data cua getProductDetail_service ${data}");
         return data;
+      } else {
+        throw Exception('Failed to load product detail');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  static Future<ProductDetailModel> get_product_details(int productId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/products/$productId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ProductDetailModel.fromJson(data);
       } else {
         throw Exception('Failed to load product detail');
       }
