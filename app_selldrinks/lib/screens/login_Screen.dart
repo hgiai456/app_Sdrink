@@ -55,21 +55,21 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('token', token);
 
       // Lấy role từ kết quả trả về
-      int? role = result['data']?['role'];
-      if (role == 1) {
-        // Nếu là admin, chuyển sang ProductAdminScreen và truyền token
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } else {
-        // Nếu không phải admin, vào HomeScreen
-
+      int? role = result['data']?['user']?['role'];
+      print('Role đăng nhập: $role');
+      if (role == 2) {
+        // Nếu là admin, chuyển sang AdminDashboardScreen và truyền token
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => AdminDashboardScreen(token: token),
           ),
+        );
+      } else {
+        // Nếu không phải admin, vào HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } else {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/adminArea/adminModels/size_admin.dart';
 import 'package:app_selldrinks/adminArea/adminSevices/size_admin_service.dart';
+import 'package:app_selldrinks/themes/highland_theme.dart';
 
 class SizeAdminScreen extends StatefulWidget {
   final String token;
@@ -42,68 +43,110 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
     showDialog(
       context: context,
       builder:
-          (_) => AlertDialog(
-            title: Text(size == null ? 'Thêm size' : 'Sửa size'),
-            content: SingleChildScrollView(
+          (_) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            backgroundColor: kLightGray,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Form(
                 key: _formKey,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Text(
+                      size == null ? 'Thêm size' : 'Sửa size',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: kDarkGray,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: nameController,
-                      decoration: InputDecoration(labelText: 'Tên size'),
+                      decoration: InputDecoration(
+                        labelText: 'Tên size',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
                       validator:
                           (v) =>
                               v == null || v.isEmpty
                                   ? 'Không được để trống'
                                   : null,
                     ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(
+                              color: kMediumGray,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kDarkGray,
+                            foregroundColor: kWhite,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 28,
+                              vertical: 12,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (!_formKey.currentState!.validate()) return;
+                            final newSize = SizeAdmin(
+                              id: size?.id,
+                              name: nameController.text,
+                            );
+                            bool success = false;
+                            if (size == null) {
+                              success = await SizeAdminService.addSize(
+                                newSize,
+                                widget.token,
+                              );
+                            } else {
+                              success = await SizeAdminService.updateSize(
+                                newSize,
+                                widget.token,
+                              );
+                            }
+                            if (success) {
+                              Navigator.pop(context);
+                              fetchAllSizes(page: currentPage);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    size == null
+                                        ? 'Thêm size thất bại!'
+                                        : 'Cập nhật size thất bại!',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(size == null ? 'Thêm' : 'Cập nhật'),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Hủy'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) return;
-                  final newSize = SizeAdmin(
-                    id: size?.id,
-                    name: nameController.text,
-                  );
-                  bool success = false;
-                  if (size == null) {
-                    success = await SizeAdminService.addSize(
-                      newSize,
-                      widget.token,
-                    );
-                  } else {
-                    success = await SizeAdminService.updateSize(
-                      newSize,
-                      widget.token,
-                    );
-                  }
-                  if (success) {
-                    Navigator.pop(context);
-                    fetchAllSizes(page: currentPage);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          size == null
-                              ? 'Thêm size thất bại!'
-                              : 'Cập nhật size thất bại!',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: Text(size == null ? 'Thêm' : 'Cập nhật'),
-              ),
-            ],
           ),
     );
   }
@@ -116,40 +159,70 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Quản lý size')),
+      appBar: AppBar(
+        title: Text('Quản lý size', style: TextStyle(color: kDarkGray)),
+        backgroundColor: kWhite,
+        iconTheme: IconThemeData(color: kDarkGray),
+      ),
+      backgroundColor: kLightGray,
       body:
           isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(color: kDarkGray))
               : Column(
                 children: [
                   Expanded(
                     child:
                         sizes.isEmpty
-                            ? Center(child: Text('Không có size nào!'))
+                            ? Center(
+                              child: Text(
+                                'Không có size nào!',
+                                style: TextStyle(color: kMediumGray),
+                              ),
+                            )
                             : ListView.builder(
                               itemCount: sizes.length,
                               itemBuilder: (_, i) {
                                 final s = sizes[i];
-                                return ListTile(
-                                  leading: Icon(Icons.straighten),
-                                  title: Text(s.name),
-                                  subtitle:
-                                      s.createdAt != null
-                                          ? Text('Tạo: ${s.createdAt}')
-                                          : null,
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed:
-                                            () => showSizeDialog(size: s),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.delete),
-                                        onPressed: () => deleteSize(s.id!),
-                                      ),
-                                    ],
+                                return Card(
+                                  color: kWhite,
+                                  child: ListTile(
+                                    leading: Icon(
+                                      Icons.straighten,
+                                      color: kDarkGray,
+                                    ),
+                                    title: Text(
+                                      s.name,
+                                      style: TextStyle(color: kDarkGray),
+                                    ),
+                                    subtitle:
+                                        s.createdAt != null
+                                            ? Text(
+                                              'Tạo: ${s.createdAt}',
+                                              style: TextStyle(
+                                                color: kMediumGray,
+                                              ),
+                                            )
+                                            : null,
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.edit,
+                                            color: kDarkGray,
+                                          ),
+                                          onPressed:
+                                              () => showSizeDialog(size: s),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () => deleteSize(s.id!),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -160,7 +233,8 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
               ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showSizeDialog(),
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: kWhite),
+        backgroundColor: kDarkGray,
       ),
     );
   }

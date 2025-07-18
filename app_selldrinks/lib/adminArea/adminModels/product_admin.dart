@@ -3,7 +3,6 @@ class ProductAdmin {
   final String name;
   final String description;
   final String? image;
-  final int? brandId;
   final int? categoryId;
   final List<dynamic>? proDetails;
 
@@ -12,7 +11,6 @@ class ProductAdmin {
     required this.name,
     required this.description,
     this.image,
-    this.brandId,
     this.categoryId,
     this.proDetails,
   });
@@ -23,7 +21,6 @@ class ProductAdmin {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       image: json['image'],
-      brandId: json['brand_id'],
       categoryId: json['category_id'],
       proDetails: json['ProDetails'],
     );
@@ -34,10 +31,8 @@ class ProductAdmin {
       'name': name,
       'description': description,
       'image': image,
-      'brand_id': brandId,
       'category_id': categoryId,
     };
-    // Chỉ thêm ProDetails nếu nó khác null và dùng cho update, không dùng cho add
     if (proDetails != null) {
       data['ProDetails'] = proDetails;
     }
