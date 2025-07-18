@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:app_selldrinks/themes/highland_theme.dart';
 import '../services/product_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
