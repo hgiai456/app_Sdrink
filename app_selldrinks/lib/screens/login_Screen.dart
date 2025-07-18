@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:app_selldrinks/services/user_service.dart';
 import 'package:app_selldrinks/models/loginuser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_selldrinks/adminArea/adminScreens/admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   // Tạo STF cho màn hình dn để có thể thay đổi trạng thái
@@ -53,11 +54,24 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
 
-      // Chuyển sang HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      // Lấy role từ kết quả trả về
+      int? role = result['data']?['role'];
+      if (role == 1) {
+        // Nếu là admin, chuyển sang ProductAdminScreen và truyền token
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        // Nếu không phải admin, vào HomeScreen
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminDashboardScreen(token: token),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['error'] ?? 'Đăng nhập thất bại')),
