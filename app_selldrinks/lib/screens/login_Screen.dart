@@ -1,6 +1,9 @@
 import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:app_selldrinks/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:app_selldrinks/services/user_service.dart';
+import 'package:app_selldrinks/models/loginuser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   // Tạo STF cho màn hình dn để có thể thay đổi trạng thái
@@ -12,13 +15,55 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   //Controller để quản lý text input
-
+  final UserService _userService = UserService();
   final TextEditingController _emailController = TextEditingController();
   //tạo controller cho input email
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
   //tạo biến boolean để lưu trạng thái
   bool _obscurePassword = true;
+
+  // Thêm hàm xử lý đăng nhập
+  Future<void> _handleLogin() async {
+    String input = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (input.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Vui lòng nhập đầy đủ thông tin')));
+      return;
+    }
+
+    // Kiểm tra input là email hay số điện thoại
+    LoginUser loginUser;
+    if (RegExp(r'^[0-9]{9,}$').hasMatch(input)) {
+      // Là số điện thoại
+      loginUser = LoginUser(phone: input, password: password);
+    } else {
+      // Là email
+      loginUser = LoginUser(email: input, password: password);
+    }
+
+    final result = await _userService.login(loginUser);
+
+    if (result['success']) {
+      String token = result['token'];
+      // Lưu token vào SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      // Chuyển sang HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['error'] ?? 'Đăng nhập thất bại')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF4B2B1B),
+                  color: Color(0xFF383838),
                 ),
               ),
               SizedBox(height: 40),
@@ -63,24 +108,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController, //gán controller để qly
                 decoration: InputDecoration(
                   hintText: 'Email hoặc số điện thoại',
-                  hintStyle: TextStyle(color: Colors.grey.shade500), // chữ mờ
+                  hintStyle: TextStyle(color: Color(0xFF808080)), // chữ mờ
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8), // bo góc 8px
                     borderSide: BorderSide(
-                      color: Colors.grey.shade300, // màu viền
+                      color: Color(0xFF80880), // màu viền
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     // viền khi enabled nhưng không focus
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: Colors.grey.shade300,
+                      color: Color(0xFF808080),
                     ), // màu viền khi focus
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: Colors.red.shade600, // màu viền khi focus
+                      color: Color(0xFF383838), // màu viền khi focus
                     ),
                   ),
 
@@ -101,18 +146,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     _obscurePassword, // Ẩn/hiện mật khẩu dựa vào biến boolean
                 decoration: InputDecoration(
                   hintText: 'Mật Khẩu',
-                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                  hintStyle: TextStyle(color: Color(0xFF808080)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Color(0xFF808080)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Color(0xFF808080)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.red.shade700),
+                    borderSide: BorderSide(color: Color(0xFF383838)),
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 16,
@@ -125,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.grey.shade600,
+                      color: Color(0xFF808080),
                     ),
                     onPressed: () {
                       setState(() {
@@ -163,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Ghi nhớ tôi',
                             style: TextStyle(
-                              color: Colors.grey.shade700,
+                              color: Color(0xFF808080),
                               fontSize: 14,
                             ),
                           ),
@@ -190,14 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity, //Chiều rộng full màn hình
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
-                  },
+                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
@@ -222,20 +260,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: Colors.grey.shade400),
+                    child: Divider(color: Color(0xFF808080)),
                   ), // Đường kẻ bên trái
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'hoặc',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Color(0xFF808080), fontSize: 14),
                     ),
                   ),
                   Expanded(
-                    child: Divider(color: Colors.grey.shade400),
+                    child: Divider(color: Color(0xFF808080)),
                   ), // Đường kẻ bên phải
                 ],
               ),
@@ -252,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: Color(0xFF808080)),
                     ),
                     child: Center(
                       child: Image.asset(
@@ -268,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: Color(0xFF808080)),
                     ),
                     child: Center(
                       child: Image.asset(

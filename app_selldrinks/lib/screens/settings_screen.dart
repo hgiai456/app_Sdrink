@@ -10,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: Color(0xFF4A2B1D), // Màu nâu của Highland
+            color: Color(0xFF383838), // Màu nâu của Highland
             size: 20, // Kích thước phù hợp
           ),
           onPressed: () => Navigator.pop(context),
@@ -18,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           'Cài Đặt',
           style: TextStyle(
-            color: Color(0xFF4A2B1D),
+            color: Color(0xFF383838),
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -37,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
               child: Text(
                 'Cài Đặt Tài Khoản',
                 style: TextStyle(
-                  color: Color(0xFF4A2B1D),
+                  color: Color(0xFF383838),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -81,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
               child: Text(
                 'Bảo Mật',
                 style: TextStyle(
-                  color: Color(0xFF4A2B1D),
+                  color: Color(0xFF383838),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -103,16 +103,16 @@ class SettingsScreen extends StatelessWidget {
               child: ListTile(
                 leading: Icon(
                   Icons.lock_outline,
-                  color: Color(0xFF4A2B1D),
+                  color: Color(0xFF383838),
                   size: 24,
                 ),
                 title: Text(
                   'Thay Đổi Mật Khẩu',
-                  style: TextStyle(color: Color(0xFF4A2B1D), fontSize: 16),
+                  style: TextStyle(color: Color(0xFF383838), fontSize: 16),
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.grey,
+                  color: Color(0xFF808080),
                   size: 20,
                 ),
                 onTap: () {

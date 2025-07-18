@@ -52,13 +52,16 @@ class ProductItem extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Color(0xFF383838), // Dark Gray
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     product.description,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF808080),
+                    ), // Medium Gray
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -76,7 +79,7 @@ class ProductItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Color(0xFF383838), // Dark Gray
                   ),
                 ),
               ],

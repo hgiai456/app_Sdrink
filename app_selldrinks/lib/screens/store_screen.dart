@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/store.dart';
-import '../service/store_service.dart';
+import '../services/store_service.dart';
 
 // cửa hàng
 class StoreScreen extends StatefulWidget {
@@ -41,7 +41,7 @@ class _StoreScreenState extends State<StoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFA10F1A),
+        backgroundColor: const Color(0xFF383838),
         title: const Text(
           'Cửa Hàng',
           style: TextStyle(
@@ -77,17 +77,17 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
+                        borderSide: BorderSide(color: Color(0xFF808080)),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Color(0xFFF5F5F5),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: IconButton(
@@ -153,7 +153,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                                   child: const Icon(
                                                     Icons.store,
                                                     size: 36,
-                                                    color: Colors.brown,
+                                                    color: Color(0xFF383838),
                                                   ),
                                                 ),
                                       )
@@ -169,7 +169,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                         child: const Icon(
                                           Icons.store,
                                           size: 36,
-                                          color: Colors.brown,
+                                          color: Color(0xFF383838),
                                         ),
                                       ),
                             ),
@@ -190,7 +190,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                     store.address,
                                     style: const TextStyle(
                                       fontSize: 13,
-                                      color: Colors.black87,
+                                      color: Color(0xFF808080),
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -199,14 +199,14 @@ class _StoreScreenState extends State<StoreScreen> {
                                       const Icon(
                                         Icons.phone,
                                         size: 14,
-                                        color: Colors.grey,
+                                        color: Color(0xFF808080),
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         store.phone,
                                         style: const TextStyle(
                                           fontSize: 13,
-                                          color: Colors.black54,
+                                          color: Color(0xFF808080),
                                         ),
                                       ),
                                     ],

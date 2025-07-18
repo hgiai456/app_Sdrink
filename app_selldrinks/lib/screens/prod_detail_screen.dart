@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:app_selldrinks/themes/highland_theme.dart';
 import '../services/product_service.dart';
+import '../services/cart_service.dart';
+import '../services/product_detail_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -16,9 +18,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? _selectedSizeName;
   int? _selectedSizePrice;
   int? _selectedSizeQuantity;
-  List<dynamic> _sizes = [];
+  int? _selectedSizeId;
+  List<Map<String, dynamic>> _sizes = [];
   Map<String, dynamic>? productDetail;
   bool isLoading = true;
+  bool isAddingToCart = false;
 
   @override
   void initState() {
@@ -29,21 +33,112 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> fetchProductDetail() async {
     try {
       final data = await ProductService.getProductDetail(widget.productId);
+      print('Full API response: $data'); // Debug full response
+
       setState(() {
+        _sizes = List<Map<String, dynamic>>.from(data['sizes'] ?? []);
+
+        // print('sizesData type: ${sizesData.runtimeType}');
+        // print('sizesData: $sizesData');
+
         productDetail = data;
-        _sizes = data['sizes'] ?? [];
+
+        final seen = <int>{};
+        _sizes =
+            _sizes.where((size) {
+              final sizeMap = Map<String, dynamic>.from(
+                size,
+              ); // Ensure it's a Map
+              if (seen.contains(sizeMap['size_id'])) return false;
+              seen.add(sizeMap['size_id']);
+              return true;
+            }).toList();
+
         if (_sizes.isNotEmpty) {
-          _selectedSizeName = _sizes[0]['size_name'];
-          _selectedSizePrice = _sizes[0]['price'];
-          _selectedSizeQuantity = _sizes[0]['quantity'];
+          final firstSize = Map<String, dynamic>.from(
+            _sizes[0],
+          ); // Cast first element
+          _selectedSizeName = firstSize['size_name'];
+          _selectedSizePrice = firstSize['price'];
+          _selectedSizeQuantity = firstSize['quantity'];
+          _selectedSizeId = firstSize['size_id'];
         }
+        print('Processed _sizes: $_sizes');
         isLoading = false;
       });
     } catch (e) {
+      print('Error in fetchProductDetail: $e');
       setState(() {
         isLoading = false;
       });
-      print('Error fetching product detail: $e');
+    }
+  }
+
+  Future<void> _addToCart() async {
+    if (_selectedSizeId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Vui lòng chọn size')));
+      return;
+    }
+
+    setState(() {
+      isAddingToCart = true;
+    });
+
+    try {
+      print('Step 1: Starting addToCart process');
+      print('ProductId: ${widget.productId}, SizeId: $_selectedSizeId');
+
+      print('Step 2: Calling ProductDetailService');
+      final productDetail =
+          await ProductDetailService.getProductDetailIdByProductAndSize(
+            productId: widget.productId,
+            sizeId: _selectedSizeId!,
+          );
+
+      print('Step 3: ProductDetailService result: $productDetail');
+
+      if (productDetail == null) {
+        throw Exception('Không tìm thấy thông tin product detail');
+      }
+
+      print(
+        'Step 4: Calling CartService with productDetailId: ${productDetail.id}',
+      );
+      await CartService.addToCart(
+        productDetailId: productDetail.id,
+        quantity: _quantity,
+      );
+
+      print('Step 5: Successfully added to cart');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã thêm sản phẩm vào giỏ hàng'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Error in _addToCart: $e');
+      print('Stack trace: $stackTrace');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isAddingToCart = false;
+        });
+      }
     }
   }
 
@@ -160,8 +255,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Row(
                     children:
                         _sizes.map<Widget>((size) {
-                          final isSelected =
-                              _selectedSizeName == size['size_name'];
+                          final isSelected = _selectedSizeId == size['size_id'];
                           return Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: ElevatedButton(
@@ -184,6 +278,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   _selectedSizeName = size['size_name'];
                                   _selectedSizePrice = size['price'];
                                   _selectedSizeQuantity = size['quantity'];
+                                  _selectedSizeId = size['size_id'];
                                 });
                               },
                               child: Text(
@@ -261,24 +356,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 IconButton(
                   icon: const Icon(Icons.add),
                   color: highlandsTheme.iconTheme.color,
-                  onPressed: () {
-                    setState(() {
-                      _quantity++;
-                    });
-                  },
+                  onPressed:
+                      (_selectedSizeQuantity != null &&
+                              _quantity < _selectedSizeQuantity!)
+                          ? () {
+                            setState(() {
+                              _quantity++;
+                            });
+                          }
+                          : null,
                 ),
               ],
             ),
             ElevatedButton(
               style: highlandsTheme.elevatedButtonTheme.style,
               onPressed:
-                  (_selectedSizePrice != null && _sizes.isNotEmpty)
-                      ? () {}
+                  (_selectedSizePrice != null &&
+                          _sizes.isNotEmpty &&
+                          !isAddingToCart)
+                      ? _addToCart
                       : null,
-              child: Text(
-                'THÊM ${NumberFormat('#,### đ').format(totalPrice)}',
-                style: highlandsTheme.textTheme.labelLarge,
-              ),
+              child:
+                  isAddingToCart
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : Text(
+                        'THÊM ${NumberFormat('#,### đ').format(totalPrice)}',
+                        style: highlandsTheme.textTheme.labelLarge,
+                      ),
             ),
           ],
         ),
