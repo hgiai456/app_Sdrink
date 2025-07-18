@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../services/product_service.dart';
 import '../services/cart_service.dart';
 import '../services/product_detail_service.dart';
+import '../themes/highland_theme.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -105,7 +106,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       print(
         'Step 4: Calling CartService with productDetailId: ${productDetail.id}',
       );
-      await CartService.addToCart(
+      await CartService().addToCart(
         productDetailId: productDetail.id,
         quantity: _quantity,
       );
