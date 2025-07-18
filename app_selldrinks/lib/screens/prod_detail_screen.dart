@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/product_service.dart';
+import '../services/cart_service.dart';
+import '../services/product_detail_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -15,578 +17,379 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? _selectedSizeName;
   int? _selectedSizePrice;
   int? _selectedSizeQuantity;
-  List<dynamic> _sizes = [];
+  int? _selectedSizeId;
+  List<Map<String, dynamic>> _sizes = [];
   Map<String, dynamic>? productDetail;
   bool isLoading = true;
-  final TextEditingController _noteController = TextEditingController();
+  bool isAddingToCart = false;
+
   @override
   void initState() {
     super.initState();
     fetchProductDetail();
   }
 
-  @override
-  void dispose() {
-    _noteController.dispose();
-    super.dispose();
-  }
-
   Future<void> fetchProductDetail() async {
     try {
       final data = await ProductService.getProductDetail(widget.productId);
+      print('Full API response: $data'); // Debug full response
+
       setState(() {
+        _sizes = List<Map<String, dynamic>>.from(data['sizes'] ?? []);
+
+        // print('sizesData type: ${sizesData.runtimeType}');
+        // print('sizesData: $sizesData');
+
         productDetail = data;
-        _sizes = data['sizes'] ?? [];
-        for (var size in _sizes) {
-          switch (size['size_id']) {
-            // size_id sẽ được set mặc định size_name là S,M,L theo API
-            case 1:
-              size['size_name'] = 'S';
-              break;
 
-            case 2:
-              size['size_name'] = 'M';
-              break;
-
-            case 3:
-              size['size_name'] = 'L';
-              break;
-
-            default:
-              size['size_name'] = 'Khác';
-          }
-        }
-        final seen = <int>{}; //Hàm xử lý trùng size
+        final seen = <int>{};
         _sizes =
             _sizes.where((size) {
-              if (seen.contains(size['size_id'])) return false;
-              seen.add(size['size_id']);
+              final sizeMap = Map<String, dynamic>.from(
+                size,
+              ); // Ensure it's a Map
+              if (seen.contains(sizeMap['size_id'])) return false;
+              seen.add(sizeMap['size_id']);
               return true;
             }).toList();
 
         if (_sizes.isNotEmpty) {
-          _selectedSizeName = _sizes[0]['size_name'];
-          _selectedSizePrice = _sizes[0]['price'];
-          _selectedSizeQuantity = _sizes[0]['quantity'];
+          final firstSize = Map<String, dynamic>.from(
+            _sizes[0],
+          ); // Cast first element
+          _selectedSizeName = firstSize['size_name'];
+          _selectedSizePrice = firstSize['price'];
+          _selectedSizeQuantity = firstSize['quantity'];
+          _selectedSizeId = firstSize['size_id'];
         }
+        print('Processed _sizes: $_sizes');
         isLoading = false;
       });
     } catch (e) {
+      print('Error in fetchProductDetail: $e');
       setState(() {
         isLoading = false;
       });
-      print('Error fetching product detail: $e');
+    }
+  }
+
+  Future<void> _addToCart() async {
+    if (_selectedSizeId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Vui lòng chọn size')));
+      return;
+    }
+
+    setState(() {
+      isAddingToCart = true;
+    });
+
+    try {
+      print('Step 1: Starting addToCart process');
+      print('ProductId: ${widget.productId}, SizeId: $_selectedSizeId');
+
+      print('Step 2: Calling ProductDetailService');
+      final productDetail =
+          await ProductDetailService.getProductDetailIdByProductAndSize(
+            productId: widget.productId,
+            sizeId: _selectedSizeId!,
+          );
+
+      print('Step 3: ProductDetailService result: $productDetail');
+
+      if (productDetail == null) {
+        throw Exception('Không tìm thấy thông tin product detail');
+      }
+
+      print(
+        'Step 4: Calling CartService with productDetailId: ${productDetail.id}',
+      );
+      await CartService.addToCart(
+        productDetailId: productDetail.id,
+        quantity: _quantity,
+      );
+
+      print('Step 5: Successfully added to cart');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã thêm sản phẩm vào giỏ hàng'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Error in _addToCart: $e');
+      print('Stack trace: $stackTrace');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isAddingToCart = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        backgroundColor: Color(0xFFF5F5F5),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                color: Color(0xFF383838),
-                strokeWidth: 3,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Đang tải thông tin sản phẩm...',
-                style: TextStyle(color: Color(0xFF808080), fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (productDetail == null) {
-      return Scaffold(
-        backgroundColor: Color(0xFFF5F5F5),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: Color(0xFF808080)),
-              SizedBox(height: 16),
-              Text(
-                'Không tìm thấy sản phẩm',
-                style: TextStyle(
-                  color: Color(0xFF383838),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
+    if (isLoading) return const Center(child: CircularProgressIndicator());
+    if (productDetail == null)
+      return const Center(child: Text('Không tìm thấy sản phẩm'));
     final data = productDetail!;
     int totalPrice = _quantity * (_selectedSizePrice ?? 0);
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: highlandsTheme.appBarTheme.foregroundColor,
       body: Column(
         children: [
-          // Product Image Section
-          Container(
-            height: 320,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              bottom: 16.0,
+              left: 24.0,
+              right: 24.0,
             ),
-            child: Stack(
-              children: [
-                // Product Image
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
-                  ),
-                  child:
-                      data['image'] != null &&
-                              data['image'].toString().isNotEmpty
-                          ? Image.network(
-                            data['image'],
-                            width: double.infinity,
-                            height: 320,
-                            fit: BoxFit.cover,
-                            errorBuilder:
-                                (context, error, stackTrace) => Container(
-                                  color: Color(0xFFF5F5F5),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.image_not_supported,
-                                          size: 48,
-                                          color: Color(0xFF808080),
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          'Không thể tải hình ảnh',
-                                          style: TextStyle(
-                                            color: Color(0xFF808080),
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                          )
-                          : Container(
-                            width: double.infinity,
-                            height: 320,
-                            color: Color(0xFFF5F5F5),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.image,
-                                    size: 48,
-                                    color: Color(0xFF808080),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Chưa có hình ảnh',
-                                    style: TextStyle(
-                                      color: Color(0xFF808080),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(10),
+              ),
+              child: Stack(
+                children: [
+                  data['image'] != null && data['image'].toString().isNotEmpty
+                      ? Image.network(
+                        data['image'],
+                        width: double.infinity,
+                        height: 300,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) => Container(
+                              color: Colors.grey,
+                              child: const Center(
+                                child: Text('Image not found'),
                               ),
                             ),
-                          ),
-                ),
-
-                // Close Button
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
+                      )
+                      : Container(
+                        width: double.infinity,
+                        height: 300,
+                        color: Colors.grey[300],
+                        child: const Center(child: Icon(Icons.image, size: 60)),
+                      ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
                     child: IconButton(
                       icon: Icon(
                         Icons.close,
-                        color: Color(0xFF383838),
-                        size: 20,
+                        color:
+                            highlandsTheme
+                                .bottomNavigationBarTheme
+                                .unselectedItemColor,
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                   ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: highlandsTheme.scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
+            ),
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    data['name'] ?? '',
+                    style: highlandsTheme.textTheme.titleLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  _selectedSizePrice != null
+                      ? NumberFormat('#,### VNĐ').format(_selectedSizePrice)
+                      : 'N/A',
+                  style: highlandsTheme.textTheme.titleLarge,
                 ),
               ],
             ),
           ),
-
-          // Product Info Section
           Expanded(
             child: Container(
-              margin: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
+              color: highlandsTheme.scaffoldBackgroundColor,
               child: ListView(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.only(top: 0, left: 16.0, right: 16.0),
                 children: [
-                  // Product Name and Price
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          data['name'] ?? '',
-                          style: TextStyle(
-                            color: Color(0xFF383838),
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF383838),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _selectedSizePrice != null
-                              ? NumberFormat(
-                                '#,### đ',
-                              ).format(_selectedSizePrice)
-                              : 'N/A',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Description
                   Text(
                     data['description'] ?? '',
-                    style: TextStyle(
-                      color: Color(0xFF808080),
-                      fontSize: 16,
-                      height: 1.5,
-                    ),
+                    style: highlandsTheme.textTheme.bodyLarge,
                   ),
-
-                  SizedBox(height: 16),
-
-                  // Additional Info
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Phần trang trí có thể bị ảnh hưởng khi vận chuyển.',
-                          style: TextStyle(
-                            color: Color(0xFF808080),
-                            fontSize: 14,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Giá đã bao gồm 8% VAT.',
-                          style: TextStyle(
-                            color: Color(0xFF808080),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+                  const Text(
+                    'Phần trang trí có thể bị ảnh hưởng khi vận chuyển.',
                   ),
-
-                  SizedBox(height: 24),
-
-                  // Size Selection
-                  Text(
-                    'Chọn kích thước',
-                    style: TextStyle(
-                      color: Color(0xFF383838),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  SizedBox(height: 12),
-
+                  const Text('Giá đã bao gồm 8% VAT.'),
+                  const SizedBox(height: 16),
+                  const Divider(color: Colors.grey, thickness: 1),
+                  const SizedBox(height: 16),
                   Row(
                     children:
                         _sizes.map<Widget>((size) {
-                          final isSelected =
-                              _selectedSizeName == size['size_name'];
-                          return Expanded(
-                            child: Container(
-                              margin: EdgeInsets.only(right: 8),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      isSelected
-                                          ? Color(0xFF383838)
-                                          : Colors.white,
-                                  side: BorderSide(
-                                    color:
-                                        isSelected
-                                            ? Color(0xFF383838)
-                                            : Color(
-                                              0xFF808080,
-                                            ).withOpacity(0.3),
-                                    width: 1,
-                                  ),
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: isSelected ? 2 : 0,
+                          final isSelected = _selectedSizeId == size['size_id'];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    isSelected
+                                        ? highlandsTheme.primaryColor
+                                        : Colors.white,
+                                side: const BorderSide(color: Colors.grey),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 24,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedSizeName = size['size_name'];
-                                    _selectedSizePrice = size['price'];
-                                    _selectedSizeQuantity = size['quantity'];
-                                  });
-                                },
-                                child: Text(
-                                  size['size_name'] ?? '',
-                                  style: TextStyle(
-                                    color:
-                                        isSelected
-                                            ? Colors.white
-                                            : Color(0xFF383838),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedSizeName = size['size_name'];
+                                  _selectedSizePrice = size['price'];
+                                  _selectedSizeQuantity = size['quantity'];
+                                  _selectedSizeId = size['size_id'];
+                                });
+                              },
+                              child: Text(
+                                size['size_name'] ?? '',
+                                style: TextStyle(
+                                  color:
+                                      isSelected
+                                          ? highlandsTheme
+                                              .textTheme
+                                              .labelLarge
+                                              ?.color
+                                          : Colors.black,
                                 ),
                               ),
                             ),
                           );
                         }).toList(),
                   ),
-
-                  SizedBox(height: 24),
-
-                  // Notes Section
+                  const SizedBox(height: 16),
                   Row(
                     children: [
-                      Icon(
-                        Icons.note_alt_outlined,
-                        color: Color(0xFF383838),
-                        size: 20,
-                      ),
-                      SizedBox(width: 8),
+                      Icon(Icons.note, color: highlandsTheme.iconTheme.color),
+                      const SizedBox(width: 8),
                       Text(
                         'Ghi Chú',
-                        style: TextStyle(
-                          color: Color(0xFF383838),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: highlandsTheme.textTheme.bodyMedium,
                       ),
                       Text(
                         ' (không bắt buộc)',
-                        style: TextStyle(
-                          color: Color(0xFF808080),
-                          fontSize: 14,
+                        style: highlandsTheme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey,
                         ),
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 12),
-
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Color(0xFF808080).withOpacity(0.2),
-                      ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Ghi Chú',
+                      border: highlandsTheme.inputDecorationTheme.border,
+                      focusedBorder:
+                          highlandsTheme.inputDecorationTheme.focusedBorder,
+                      fillColor: highlandsTheme.inputDecorationTheme.fillColor,
+                      contentPadding: const EdgeInsets.all(10),
                     ),
-                    child: TextField(
-                      controller: _noteController,
-                      decoration: InputDecoration(
-                        hintText: 'Nhập ghi chú cho đơn hàng...',
-                        hintStyle: TextStyle(
-                          color: Color(0xFF808080),
-                          fontSize: 14,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(16),
-                      ),
-                      maxLines: 3,
-                      style: TextStyle(color: Color(0xFF383838), fontSize: 14),
-                    ),
+                    maxLines: 2,
                   ),
-
-                  SizedBox(height: 100), // Space for bottom bar
                 ],
               ),
             ),
           ),
         ],
       ),
-
-      // Bottom Action Bar
       bottomNavigationBar: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
+        padding: const EdgeInsets.all(16.0),
+        color: highlandsTheme.appBarTheme.foregroundColor,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Quantity Controls
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Color(0xFF808080).withOpacity(0.2)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.remove,
-                      color:
-                          _quantity > 1 ? Color(0xFF383838) : Color(0xFF808080),
-                      size: 20,
-                    ),
-                    onPressed:
-                        _quantity > 1
-                            ? () {
-                              setState(() {
-                                _quantity--;
-                              });
-                            }
-                            : null,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      '$_quantity',
-                      style: TextStyle(
-                        color: Color(0xFF383838),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.add, color: Color(0xFF383838), size: 20),
-                    onPressed: () {
-                      setState(() {
-                        _quantity++;
-                      });
-                    },
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  color: highlandsTheme.iconTheme.color,
+                  onPressed:
+                      _quantity > 1
+                          ? () {
+                            setState(() {
+                              _quantity--;
+                            });
+                          }
+                          : null,
+                ),
+                Text('$_quantity', style: highlandsTheme.textTheme.titleLarge),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  color: highlandsTheme.iconTheme.color,
+                  onPressed:
+                      (_selectedSizeQuantity != null &&
+                              _quantity < _selectedSizeQuantity!)
+                          ? () {
+                            setState(() {
+                              _quantity++;
+                            });
+                          }
+                          : null,
+                ),
+              ],
             ),
-
-            SizedBox(width: 16),
-
-            // Add to Cart Button
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF383838),
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                onPressed:
-                    (_selectedSizePrice != null && _sizes.isNotEmpty)
-                        ? () {
-                          // Add to cart logic
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Đã thêm ${data['name']} vào giỏ hàng',
-                              ),
-                              backgroundColor: Color(0xFF383838),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
-                        : null,
-                child: Text(
-                  'THÊM ${NumberFormat('#,### đ').format(totalPrice)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
+            ElevatedButton(
+              style: highlandsTheme.elevatedButtonTheme.style,
+              onPressed:
+                  (_selectedSizePrice != null &&
+                          _sizes.isNotEmpty &&
+                          !isAddingToCart)
+                      ? _addToCart
+                      : null,
+              child:
+                  isAddingToCart
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : Text(
+                        'THÊM ${NumberFormat('#,### đ').format(totalPrice)}',
+                        style: highlandsTheme.textTheme.labelLarge,
+                      ),
             ),
           ],
         ),

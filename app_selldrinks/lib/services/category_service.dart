@@ -3,7 +3,7 @@ import 'package:app_selldrinks/models/category.dart';
 import 'package:http/http.dart' as http;
 
 class CategoryService {
-  static const String baseUrl = 'http://10.0.2.2:3003/api';
+  static const String baseUrl = 'http://10.0.2.2:3000/api';
   // Lấy tất cả sản phẩm
   static Future<List<Category>> getCategories() async {
     final response = await http.get(Uri.parse('$baseUrl/categories'));
