@@ -702,43 +702,6 @@ class _CartScreenState extends State<CartScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-<<<<<<< HEAD
-        return Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Chọn Cửa Hàng',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 16),
-              ...stores.map(
-                (store) => ListTile(
-                  title: Text(store.name),
-                  subtitle: Text(store.fullAddress),
-                  leading: Radio<Store>(
-                    value: store,
-                    groupValue: selectedStore,
-                    onChanged: (Store? value) {
-                      setState(() {
-                        selectedStore = value;
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                  onTap: () {
-                    setState(() {
-                      selectedStore = store;
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-=======
         return AlertDialog(
           title: const Text('Xác nhận'),
           content: const Text('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?'),
@@ -755,7 +718,6 @@ class _CartScreenState extends State<CartScreen> {
               child: const Text('Xóa', style: TextStyle(color: Colors.red)),
             ),
           ],
->>>>>>> 26a31fe0305091359ae3bb2ae9296f7492a75ff2
         );
       },
     );
