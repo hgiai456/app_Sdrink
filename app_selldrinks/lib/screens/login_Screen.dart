@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8), // bo góc 8px
                     borderSide: BorderSide(
-                      color: Color(0xFF80880), // màu viền
+                      color: Color(0x0ff80880), // màu viền
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(

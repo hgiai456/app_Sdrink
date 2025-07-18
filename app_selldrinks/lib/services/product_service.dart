@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/models/product_detail_response.dart';
 import 'package:http/http.dart' as http;
+import 'package:app_selldrinks/services/port.dart';
 
 class ProductService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
   // Lấy tất cả sản phẩm
   static Future<List<Product>> getProducts() async {
-    final response = await http.get(Uri.parse('$baseUrl/products'));
+    final response = await http.get(Uri.parse('${Port.baseUrl}/products'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -21,7 +21,7 @@ class ProductService {
 
   static Future<List<Product>> getProductsByCategory(int categoryId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/products-by-category?category_id=$categoryId'),
+      Uri.parse('${Port.baseUrl}/products-by-category?category_id=$categoryId'),
     );
 
     if (response.statusCode == 200) {
@@ -36,7 +36,7 @@ class ProductService {
 
   static Future<List<dynamic>> fetchCategories() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/categories'));
+      final response = await http.get(Uri.parse('${Port.baseUrl}/categories'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -53,7 +53,9 @@ class ProductService {
   static Future<List<dynamic>> fetchProductsByCategory(int categoryId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/products-by-category?category_id=$categoryId'),
+        Uri.parse(
+          '${Port.baseUrl}/products-by-category?category_id=$categoryId',
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -71,7 +73,7 @@ class ProductService {
   static Future<Map<String, dynamic>> getProductDetail(int productId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/products/$productId'),
+        Uri.parse('${Port.baseUrl}/products/$productId'),
       );
 
       if (response.statusCode == 200) {
@@ -89,7 +91,7 @@ class ProductService {
   static Future<ProductDetailModel> get_product_details(int productId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/products/$productId'),
+        Uri.parse('${Port.baseUrl}/products/$productId'),
       );
 
       if (response.statusCode == 200) {
