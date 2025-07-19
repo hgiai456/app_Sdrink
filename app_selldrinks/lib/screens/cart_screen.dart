@@ -1,6 +1,7 @@
 import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/models/store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -14,6 +15,12 @@ class _CartScreenState extends State<CartScreen> {
   bool isDelivery = true;
   int freezeQuantity = 1;
   int cheeseQuantity = 1;
+
+  // Thông tin user
+  int? userId;
+  String userName = '';
+  String userPhone = '';
+  String userAddress = '';
 
   final List<Store> stores = [
     Store(
@@ -38,6 +45,18 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     selectedStore = stores.first;
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getInt('userId');
+      userName = prefs.getString('userName') ?? '';
+      userPhone = prefs.getString('userPhone') ?? '';
+      userAddress = prefs.getString('userAddress') ?? '';
+    });
+    print('User ID: $userId, Name: $userName, Phone: $userPhone');
   }
 
   int get totalAmount => (freezeQuantity * 55000) + (cheeseQuantity * 29000);
@@ -56,7 +75,7 @@ class _CartScreenState extends State<CartScreen> {
           onPressed:
               () => Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
               ),
         ),
         title: Text(

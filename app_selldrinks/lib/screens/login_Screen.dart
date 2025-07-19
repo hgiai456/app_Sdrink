@@ -50,9 +50,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result['success']) {
       String token = result['token'];
-      // Lưu token vào SharedPreferences
+      // Lưu token và thông tin user vào SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
+
+      // Lưu thông tin user
+      var userData = result['data']?['user'];
+      if (userData != null) {
+        await prefs.setInt('userId', userData['id'] ?? 0);
+        await prefs.setString('userName', userData['name'] ?? '');
+        await prefs.setString('userEmail', userData['email'] ?? '');
+        await prefs.setString('userPhone', userData['phone'] ?? '');
+        await prefs.setString('userAddress', userData['address'] ?? '');
+        await prefs.setInt('userRole', userData['role'] ?? 0);
+      }
 
       // Lấy role từ kết quả trả về
       int? role = result['data']?['user']?['role'];
