@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:app_selldrinks/models/loginuser.dart';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 import '../models/user.dart'; // import model bạn đã tạo
 
 class UserService {
-  final String _baseUrl = 'http://10.0.2.2:3000/api/users'; // Đúng port backend
+  final String _baseUrl = '${Port.baseUrl}/users'; // Đúng port backend
 
   //Đăng nhập
   Future<Map<String, dynamic>> login(LoginUser user) async {

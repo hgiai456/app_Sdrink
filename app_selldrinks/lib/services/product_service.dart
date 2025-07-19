@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/models/product_detail_response.dart';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 
 class ProductService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  static const String baseUrl = Port.baseUrl;
   // Lấy tất cả sản phẩm
   static Future<List<Product>> getProducts() async {
     final response = await http.get(Uri.parse('$baseUrl/products'));
@@ -102,8 +103,47 @@ class ProductService {
       throw Exception('Error: $e');
     }
   }
+
+  //----------------Tìm kiếm sản phẩm----------------//
+  static Future<List<Product>> searchProducts(String query) async {
+    try {
+      if (query.trim().isEmpty) {
+        return [];
+      }
+
+      print('ProductService - Searching for: "$query"');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/products?search=${Uri.encodeComponent(query)}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('ProductService - Search response status: ${response.statusCode}');
+      print('ProductService - Search response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final dynamic data = json.decode(response.body);
+
+        List<dynamic> productsData = [];
+
+        // Xử lý nhiều format response
+        if (data['data'] is List) {
+          productsData = data['data'];
+        } else if (data['products'] is List) {
+          productsData = data['products'];
+        } else if (data is List) {
+          productsData = data;
+        }
+
+        print('ProductService - Found ${productsData.length} products');
+
+        return productsData.map((json) => Product.fromJson(json)).toList();
+      } else {
+        throw Exception('Tìm kiếm thất bại: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('ProductService - Search error: $e');
+      throw Exception('Lỗi tìm kiếm sản phẩm: $e');
+    }
+  }
 }
-
-  // Lấy danh sách tất cả danh mục
-  
-

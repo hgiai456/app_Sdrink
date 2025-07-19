@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:app_selldrinks/models/category.dart';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 
 class CategoryService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  static const String baseUrl = Port.baseUrl;
   // Lấy tất cả sản phẩm
   static Future<List<Category>> getCategories() async {
     final response = await http.get(Uri.parse('$baseUrl/categories'));

@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 import '../models/store.dart';
 
 class StoreService {
-  static const String apiUrl = 'http://10.0.2.2:3000/api/stores';
+  static const String apiUrl = '${Port.baseUrl}/stores';
 
   Future<List<Store>> fetchStores() async {
     final response = await http.get(Uri.parse(apiUrl));
