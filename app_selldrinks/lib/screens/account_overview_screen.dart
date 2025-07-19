@@ -10,7 +10,7 @@ import 'package:app_selldrinks/screens/login_Screen.dart';
 
 //Hồ sơ
 class AccountOverviewScreen extends StatefulWidget {
-  const AccountOverviewScreen({Key? key}) : super(key: key);
+  const AccountOverviewScreen({super.key});
 
   @override
   State<AccountOverviewScreen> createState() => _AccountOverviewScreenState();

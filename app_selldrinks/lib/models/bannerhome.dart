@@ -3,11 +3,7 @@ class BannerHome {
   final String hinhAnh;
   final String linkDen;
 
-  BannerHome({
-    required this.id,
-    required this.hinhAnh,
-    required this.linkDen,
-  });
+  BannerHome({required this.id, required this.hinhAnh, required this.linkDen});
 
   // Sample data
   static List<BannerHome> getSampleData() {
@@ -18,7 +14,7 @@ class BannerHome {
         linkDen: "/promotion1",
       ),
       BannerHome(
-        id: "2", 
+        id: "2",
         hinhAnh: "assets/images/banner2.jpg",
         linkDen: "/summer_menu",
       ),
@@ -29,7 +25,7 @@ class BannerHome {
       ),
       BannerHome(
         id: "4",
-        hinhAnh: "assets/images/banner4.jpg", 
+        hinhAnh: "assets/images/banner4.jpg",
         linkDen: "/vip_member",
       ),
     ];
