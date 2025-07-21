@@ -76,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex == 0
               ? FloatingActionButton(
                 onPressed: () {
-                  // Navigate đến CartScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const CartScreen()),

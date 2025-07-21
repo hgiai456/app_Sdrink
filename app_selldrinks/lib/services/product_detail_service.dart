@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_selldrinks/models/product_detail.dart';
+import 'package:app_selldrinks/services/port.dart';
 
 class ProductDetailService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  static const String baseUrl = Port.baseUrl;
 
   static Future<ProductDetail?> getProductDetailIdByProductAndSize({
     required int productId,
@@ -15,7 +17,7 @@ class ProductDetailService {
       );
 
       final url = Uri.parse(
-        '$baseUrl/prodetail/find?pro_id=$productId&size_id=$sizeId',
+        '$baseUrl/prodetail?product_id=$productId&size_id=$sizeId',
       );
       print('ProductDetailService - URL: $url');
 

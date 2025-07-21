@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:app_selldrinks/services/user_service.dart';
 import 'package:app_selldrinks/models/loginuser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_selldrinks/adminArea/adminScreens/admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   // Tạo STF cho màn hình dn để có thể thay đổi trạng thái
@@ -49,15 +50,39 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result['success']) {
       String token = result['token'];
-      // Lưu token vào SharedPreferences
+      // Lưu token và thông tin user vào SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
 
-      // Chuyển sang HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      // Lưu thông tin user
+      var userData = result['data']?['user'];
+      if (userData != null) {
+        await prefs.setInt('userId', userData['id'] ?? 0);
+        await prefs.setString('userName', userData['name'] ?? '');
+        await prefs.setString('userEmail', userData['email'] ?? '');
+        await prefs.setString('userPhone', userData['phone'] ?? '');
+        await prefs.setString('userAddress', userData['address'] ?? '');
+        await prefs.setInt('userRole', userData['role'] ?? 0);
+      }
+
+      // Lấy role từ kết quả trả về
+      int? role = result['data']?['user']?['role'];
+      print('Role đăng nhập: $role');
+      if (role == 2) {
+        // Nếu là admin, chuyển sang AdminDashboardScreen và truyền token
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminDashboardScreen(token: token),
+          ),
+        );
+      } else {
+        // Nếu không phải admin, vào HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['error'] ?? 'Đăng nhập thất bại')),
@@ -112,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8), // bo góc 8px
                     borderSide: BorderSide(
-                      color: Color(0xFF80880), // màu viền
+                      color: Color(0x0ff80880), // màu viền
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(

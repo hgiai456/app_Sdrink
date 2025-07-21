@@ -16,6 +16,7 @@ class ProductDetail {
   final String? img3;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final Product? product; // Thêm product
 
   ProductDetail({
     required this.id,
@@ -33,6 +34,7 @@ class ProductDetail {
     this.img3,
     this.createdAt,
     this.updatedAt,
+    this.product, // Thêm product
   });
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) {
@@ -88,6 +90,10 @@ class ProductDetail {
           json['updatedAt'] != null
               ? DateTime.tryParse(json['updatedAt'].toString())
               : null,
+      product:
+          json['product'] != null
+              ? Product.fromJson(json['product'])
+              : null, // Parse product
     );
   }
 
@@ -108,10 +114,7 @@ class ProductDetail {
       'img3': img3,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'product': product?.toJson(),
     };
   }
 }
-
-// for (var size in _sizes) {
-//   size['size_name'] = getSizeName(size['size_id']);
-// } => xuất danh sách size
