@@ -7,6 +7,7 @@ class CartService {
   // Cache cart ID trong memory để tránh gọi API nhiều lần
   static int? _cachedCartId;
   static String? _cachedSessionId;
+  static int? _cachedUserId; // Thêm cache cho user ID
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -15,9 +16,20 @@ class CartService {
     return token;
   }
 
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    print('CartService - _getUserId result: $userId');
+    return userId;
+  }
+
   Future<int?> fetchCartIdBySession(String sessionId) async {
-    // Nếu session không đổi và đã có cart ID cached, dùng luôn
-    if (_cachedSessionId == sessionId && _cachedCartId != null) {
+    final currentUserId = await _getUserId();
+
+    // Nếu session không đổi, user không đổi và đã có cart ID cached, dùng luôn
+    if (_cachedSessionId == sessionId &&
+        _cachedUserId == currentUserId &&
+        _cachedCartId != null) {
       print('fetchCartIdBySession - Using cached cart ID: $_cachedCartId');
       return _cachedCartId;
     }
@@ -25,6 +37,7 @@ class CartService {
     final token = await _getToken();
     print('fetchCartIdBySession - Token: $token');
     print('fetchCartIdBySession - Looking for session: $sessionId');
+    print('fetchCartIdBySession - Current user ID: $currentUserId');
 
     final headers = {
       'Content-Type': 'application/json',
@@ -60,6 +73,7 @@ class CartService {
         'fetchCartIdBySession - Available sessions: ${carts.map((c) => c['session_id']).toList()}',
       );
 
+      // Tìm cart theo session_id (chỉ dùng session_id)
       final matchedCart = carts.firstWhere(
         (cart) => cart['session_id'] == sessionId,
         orElse: () => null,
@@ -74,6 +88,7 @@ class CartService {
         // Cache kết quả
         _cachedCartId = cartId;
         _cachedSessionId = sessionId;
+        _cachedUserId = currentUserId;
 
         return cartId;
       } else {
@@ -89,6 +104,7 @@ class CartService {
           // Cache cart ID mới
           _cachedCartId = newCartId;
           _cachedSessionId = sessionId;
+          _cachedUserId = currentUserId;
 
           return newCartId;
         } catch (e) {
@@ -139,11 +155,11 @@ class CartService {
                 // Cache kết quả
                 _cachedCartId = cartId;
                 _cachedSessionId = sessionId;
+                _cachedUserId = currentUserId;
 
                 return cartId;
               } else {
                 print('fetchCartIdBySession - Still no cart found after retry');
-                // Có thể cart bị delay quá lâu, thử tạo cart khác hoặc dùng fallback
                 throw Exception('Không thể tìm thấy cart sau khi tạo');
               }
             }
@@ -163,32 +179,47 @@ class CartService {
 
   Future<String> getSessionId() async {
     final prefs = await SharedPreferences.getInstance();
-    String? sessionId = prefs.getString('session_id');
+    final currentUserId = await _getUserId();
+
+    // Tạo session key theo user để mỗi user có session riêng
+    final sessionKey =
+        currentUserId != null ? 'session_id_$currentUserId' : 'session_id';
+
+    String? sessionId = prefs.getString(sessionKey);
     if (sessionId == null) {
       sessionId = DateTime.now().millisecondsSinceEpoch.toString();
-      prefs.setString('session_id', sessionId);
-      print('getSessionId - Created new session: $sessionId');
+      prefs.setString(sessionKey, sessionId);
+      print(
+        'getSessionId - Created new session for user $currentUserId: $sessionId',
+      );
 
       // Clear cache khi tạo session mới
       _cachedCartId = null;
       _cachedSessionId = null;
+      _cachedUserId = null;
     } else {
-      print('getSessionId - Using existing session: $sessionId');
+      print(
+        'getSessionId - Using existing session for user $currentUserId: $sessionId',
+      );
     }
     return sessionId;
   }
 
   Future<int> createCart(String sessionId) async {
     final token = await _getToken();
+    final userId = await _getUserId();
+
     print('createCart - Token: $token');
-    print('createCart - Creating cart for session: $sessionId');
+    print('createCart - Creating cart for session: $sessionId, user: $userId');
 
     final headers = {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
+    // CHỈ GỬI session_id, KHÔNG gửi user_id
     final body = jsonEncode({'session_id': sessionId});
+
     print('createCart - Request URL: ${Port.baseUrl}/carts');
     print('createCart - Request headers: $headers');
     print('createCart - Request body: $body');
@@ -214,6 +245,55 @@ class CartService {
     throw Exception(
       'Tạo giỏ hàng thất bại: Status ${res.statusCode}, Body: ${res.body}',
     );
+  }
+
+  // Method xóa session_id theo user khi đăng xuất
+  Future<void> clearSessionForUser({int? specificUserId}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = specificUserId ?? await _getUserId();
+
+    if (userId != null) {
+      final sessionKey = 'session_id_$userId';
+      await prefs.remove(sessionKey);
+      print('clearSessionForUser - Cleared session for user $userId');
+    } else {
+      // Clear generic session nếu không có user ID
+      await prefs.remove('session_id');
+      print('clearSessionForUser - Cleared generic session');
+    }
+
+    // Clear cache
+    _cachedCartId = null;
+    _cachedSessionId = null;
+    _cachedUserId = null;
+
+    print('clearSessionForUser - Session and cache cleared successfully');
+  }
+
+  // Method xóa session_id sau khi thanh toán thành công (giữ nguyên)
+  Future<void> clearSession() async {
+    await clearSessionForUser();
+  }
+
+  // Method xóa tất cả sessions (dùng khi cần thiết)
+  Future<void> clearAllSessions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys();
+
+    // Xóa tất cả session keys
+    for (final key in keys) {
+      if (key.startsWith('session_id')) {
+        await prefs.remove(key);
+        print('clearAllSessions - Removed session: $key');
+      }
+    }
+
+    // Clear cache
+    _cachedCartId = null;
+    _cachedSessionId = null;
+    _cachedUserId = null;
+
+    print('clearAllSessions - All sessions cleared');
   }
 
   Future<void> addToCart({
@@ -297,8 +377,8 @@ class CartService {
     if (res.statusCode == 200 || res.statusCode == 201) {
       final responseBody = jsonDecode(res.body);
 
-      // Thanh toán thành công -> xóa session và cache để tạo giỏ hàng mới lần sau
-      await clearSession();
+      // Thanh toán thành công -> xóa session của user hiện tại
+      await clearSessionForUser();
 
       return responseBody;
     } else {
@@ -306,18 +386,6 @@ class CartService {
         'Thanh toán thất bại: Status ${res.statusCode}, Body: ${res.body}',
       );
     }
-  }
-
-  // Method xóa session_id sau khi thanh toán thành công
-  Future<void> clearSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('session_id');
-
-    // Clear cache
-    _cachedCartId = null;
-    _cachedSessionId = null;
-
-    print('clearSession - Session and cache cleared successfully');
   }
 
   // Method lấy cart ID hiện tại (để dùng cho checkout)
@@ -353,6 +421,7 @@ class CartService {
       print('getCartById - Cart not found, clearing cache');
       _cachedCartId = null;
       _cachedSessionId = null;
+      _cachedUserId = null;
       return null;
     } else {
       throw Exception(

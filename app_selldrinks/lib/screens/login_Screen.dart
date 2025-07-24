@@ -5,6 +5,7 @@ import 'package:app_selldrinks/services/user_service.dart';
 import 'package:app_selldrinks/models/loginuser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_selldrinks/adminArea/adminScreens/admin_dashboard_screen.dart';
+import 'package:app_selldrinks/services/cart_service.dart'; // Thêm import này
 
 class LoginScreen extends StatefulWidget {
   // Tạo STF cho màn hình dn để có thể thay đổi trạng thái
@@ -52,6 +53,10 @@ class _LoginScreenState extends State<LoginScreen> {
       String token = result['token'];
       print('Login - Token received: $token'); // Debug token
 
+      // *** QUAN TRỌNG: Xóa tất cả session cũ trước khi đăng nhập user mới ***
+      await CartService().clearAllSessions();
+      print('Login - Cleared all old sessions');
+
       // Lưu token và thông tin user vào SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
@@ -71,7 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userPhone', userData['phone'] ?? '');
         await prefs.setString('userAddress', userData['address'] ?? '');
         await prefs.setInt('userRole', userData['role'] ?? 0);
+
+        print('Login - User ID saved: ${userData['id']}');
       }
+
+      // Tạo session mới cho user vừa đăng nhập
+      final cartService = CartService();
+      final newSessionId = await cartService.getSessionId();
+      print('Login - Created new session for user: $newSessionId');
 
       // Lấy role từ kết quả trả về
       int? role = result['data']?['user']?['role'];

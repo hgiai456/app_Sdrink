@@ -7,6 +7,7 @@ import 'package:app_selldrinks/screens/profile_screen.dart';
 import 'package:app_selldrinks/screens/settings_screen.dart';
 import 'package:app_selldrinks/screens/priacypolicy_screen.dart';
 import 'package:app_selldrinks/screens/login_Screen.dart';
+import 'package:app_selldrinks/services/cart_service.dart'; // Thêm import này
 
 //Hồ sơ
 class AccountOverviewScreen extends StatefulWidget {
@@ -506,7 +507,27 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
               child: const Text('Đăng Xuất'),
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
+
+                // Lấy user ID trước khi xóa để xóa session
+                final userId = prefs.getInt('userId');
+
+                // Xóa session cho user hiện tại
+                if (userId != null) {
+                  await CartService().clearSessionForUser(
+                    specificUserId: userId,
+                  );
+                } else {
+                  await CartService().clearSession();
+                }
+
+                // Xóa tất cả thông tin user
                 await prefs.remove('token');
+                await prefs.remove('userId');
+                await prefs.remove('userName');
+                await prefs.remove('userEmail');
+                await prefs.remove('userPhone');
+                await prefs.remove('userAddress');
+                await prefs.remove('userRole');
                 await prefs.remove('firstName');
                 await prefs.remove('lastName');
                 await prefs.remove('email');
@@ -517,6 +538,8 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 await prefs.remove('isVerified');
                 await prefs.remove('createdAt');
                 await prefs.remove('updatedAt');
+
+                print('Logout - All user data and session cleared');
 
                 Navigator.of(context).pop(); // Close dialog
                 Navigator.of(context).pushReplacement(
