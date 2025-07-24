@@ -4,19 +4,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class CartService {
+  // Cache cart ID trong memory để tránh gọi API nhiều lần
+  static int? _cachedCartId;
+  static String? _cachedSessionId;
+
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    print('CartService - _getToken result: $token'); // Debug token retrieval
+    print('CartService - _getToken result: $token');
     return token;
   }
 
   Future<int?> fetchCartIdBySession(String sessionId) async {
+    // Nếu session không đổi và đã có cart ID cached, dùng luôn
+    if (_cachedSessionId == sessionId && _cachedCartId != null) {
+      print('fetchCartIdBySession - Using cached cart ID: $_cachedCartId');
+      return _cachedCartId;
+    }
+
     final token = await _getToken();
-    print('fetchCartIdBySession - Token: $token'); // Debug token
-    print(
-      'fetchCartIdBySession - Looking for session: $sessionId',
-    ); // Debug session ID
+    print('fetchCartIdBySession - Token: $token');
+    print('fetchCartIdBySession - Looking for session: $sessionId');
 
     final headers = {
       'Content-Type': 'application/json',
@@ -40,11 +48,9 @@ class CartService {
         if (responseBody['data'] is List) {
           carts = responseBody['data'];
         } else {
-          // If data is a single cart object, wrap it in a list
           carts = [responseBody['data']];
         }
       } else if (responseBody is Map) {
-        // If responseBody is a single cart object, wrap it in a list
         carts = [responseBody];
       } else {
         throw Exception('Unexpected response format');
@@ -63,16 +69,89 @@ class CartService {
 
       if (matchedCart != null) {
         final cartId = matchedCart['id'];
-        print('fetchCartIdBySession - Returning existing cart ID: $cartId');
+        print('fetchCartIdBySession - Found existing cart ID: $cartId');
+
+        // Cache kết quả
+        _cachedCartId = cartId;
+        _cachedSessionId = sessionId;
+
         return cartId;
       } else {
-        // No cart found for this session, create a new one
+        // No cart found for this session, try to create a new one
         print(
           'fetchCartIdBySession - No cart found for session $sessionId, creating new cart',
         );
-        final newCartId = await createCart(sessionId);
-        print('fetchCartIdBySession - Created new cart with ID: $newCartId');
-        return newCartId;
+
+        try {
+          final newCartId = await createCart(sessionId);
+          print('fetchCartIdBySession - Created new cart with ID: $newCartId');
+
+          // Cache cart ID mới
+          _cachedCartId = newCartId;
+          _cachedSessionId = sessionId;
+
+          return newCartId;
+        } catch (e) {
+          // If creation fails due to conflict (409), try to fetch again
+          if (e.toString().contains('409') ||
+              e.toString().contains('đã tồn tại')) {
+            print(
+              'fetchCartIdBySession - Cart already exists (409), waiting and retrying...',
+            );
+
+            // Wait longer for database to sync
+            await Future.delayed(Duration(milliseconds: 1000));
+
+            // Try to fetch cart list again
+            final retryRes = await http.get(
+              Uri.parse('${Port.baseUrl}/carts'),
+              headers: headers,
+            );
+
+            if (retryRes.statusCode == 200) {
+              final retryResponseBody = jsonDecode(retryRes.body);
+              print('Retry Cart API response: $retryResponseBody');
+
+              List<dynamic> retryCarts;
+
+              if (retryResponseBody is List) {
+                retryCarts = retryResponseBody;
+              } else if (retryResponseBody is Map &&
+                  retryResponseBody.containsKey('data')) {
+                if (retryResponseBody['data'] is List) {
+                  retryCarts = retryResponseBody['data'];
+                } else {
+                  retryCarts = [retryResponseBody['data']];
+                }
+              } else {
+                retryCarts = [retryResponseBody];
+              }
+
+              final retryMatchedCart = retryCarts.firstWhere(
+                (cart) => cart['session_id'] == sessionId,
+                orElse: () => null,
+              );
+
+              if (retryMatchedCart != null) {
+                final cartId = retryMatchedCart['id'];
+                print('fetchCartIdBySession - Found cart after retry: $cartId');
+
+                // Cache kết quả
+                _cachedCartId = cartId;
+                _cachedSessionId = sessionId;
+
+                return cartId;
+              } else {
+                print('fetchCartIdBySession - Still no cart found after retry');
+                // Có thể cart bị delay quá lâu, thử tạo cart khác hoặc dùng fallback
+                throw Exception('Không thể tìm thấy cart sau khi tạo');
+              }
+            }
+          }
+
+          // If still can't find or create, rethrow the error
+          throw e;
+        }
       }
     } else {
       print(
@@ -89,6 +168,10 @@ class CartService {
       sessionId = DateTime.now().millisecondsSinceEpoch.toString();
       prefs.setString('session_id', sessionId);
       print('getSessionId - Created new session: $sessionId');
+
+      // Clear cache khi tạo session mới
+      _cachedCartId = null;
+      _cachedSessionId = null;
     } else {
       print('getSessionId - Using existing session: $sessionId');
     }
@@ -97,10 +180,8 @@ class CartService {
 
   Future<int> createCart(String sessionId) async {
     final token = await _getToken();
-    print('createCart - Token: $token'); // Debug token
-    print(
-      'createCart - Creating cart for session: $sessionId',
-    ); // Debug session
+    print('createCart - Token: $token');
+    print('createCart - Creating cart for session: $sessionId');
 
     final headers = {
       'Content-Type': 'application/json',
@@ -143,9 +224,9 @@ class CartService {
     final cartId = await fetchCartIdBySession(sessionId);
 
     final token = await _getToken();
-    print('CartService - Token: $token'); // Debug token
-    print('CartService - Session ID: $sessionId'); // Debug session ID
-    print('CartService - Cart ID: $cartId'); // Debug cart ID
+    print('CartService - Token: $token');
+    print('CartService - Session ID: $sessionId');
+    print('CartService - Cart ID: $cartId');
 
     final headers = {
       'Content-Type': 'application/json',
@@ -176,8 +257,6 @@ class CartService {
         'Thêm vào giỏ hàng thất bại: Status ${res.statusCode}, Body: ${res.body}',
       );
     }
-
-    // Sau khi thêm thành công, kiểm tra và hiển thị thông tin
   }
 
   // Method thanh toán giỏ hàng
@@ -218,7 +297,7 @@ class CartService {
     if (res.statusCode == 200 || res.statusCode == 201) {
       final responseBody = jsonDecode(res.body);
 
-      // Thanh toán thành công -> xóa session để tạo giỏ hàng mới lần sau
+      // Thanh toán thành công -> xóa session và cache để tạo giỏ hàng mới lần sau
       await clearSession();
 
       return responseBody;
@@ -233,12 +312,110 @@ class CartService {
   Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('session_id');
-    print('clearSession - Session cleared successfully');
+
+    // Clear cache
+    _cachedCartId = null;
+    _cachedSessionId = null;
+
+    print('clearSession - Session and cache cleared successfully');
   }
 
   // Method lấy cart ID hiện tại (để dùng cho checkout)
   Future<int?> getCurrentCartId() async {
     final sessionId = await getSessionId();
     return await fetchCartIdBySession(sessionId);
+  }
+
+  // Method lấy cart theo ID với chi tiết sản phẩm
+  Future<Map<String, dynamic>?> getCartById(int cartId) async {
+    final token = await _getToken();
+    print('getCartById - Token: $token');
+    print('getCartById - Cart ID: $cartId');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    final res = await http.get(
+      Uri.parse('${Port.baseUrl}/carts/$cartId'),
+      headers: headers,
+    );
+
+    print('getCartById - Response status: ${res.statusCode}');
+    print('getCartById - Response body: ${res.body}');
+
+    if (res.statusCode == 200) {
+      final responseBody = jsonDecode(res.body);
+      return responseBody;
+    } else if (res.statusCode == 404) {
+      // Cart không tồn tại
+      print('getCartById - Cart not found, clearing cache');
+      _cachedCartId = null;
+      _cachedSessionId = null;
+      return null;
+    } else {
+      throw Exception(
+        'Lấy thông tin giỏ hàng thất bại: Status ${res.statusCode}, Body: ${res.body}',
+      );
+    }
+  }
+
+  // Method lấy cart hiện tại với chi tiết sản phẩm
+  Future<Map<String, dynamic>?> getCurrentCart() async {
+    final cartId = await getCurrentCartId();
+    if (cartId != null) {
+      return await getCartById(cartId);
+    }
+    return null;
+  }
+
+  // Method cập nhật số lượng sản phẩm trong giỏ
+  Future<void> updateCartItemQuantity({
+    required int cartItemId,
+    required int quantity,
+  }) async {
+    final token = await _getToken();
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    final body = jsonEncode({'quantity': quantity});
+
+    final res = await http.put(
+      Uri.parse('${Port.baseUrl}/cart-items/$cartItemId'),
+      headers: headers,
+      body: body,
+    );
+
+    print('updateCartItemQuantity - Response status: ${res.statusCode}');
+    print('updateCartItemQuantity - Response body: ${res.body}');
+
+    if (res.statusCode != 200) {
+      throw Exception('Cập nhật số lượng thất bại');
+    }
+  }
+
+  // Method xóa sản phẩm khỏi giỏ hàng
+  Future<void> removeCartItem(int cartItemId) async {
+    final token = await _getToken();
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    final res = await http.delete(
+      Uri.parse('${Port.baseUrl}/cart-items/$cartItemId'),
+      headers: headers,
+    );
+
+    print('removeCartItem - Response status: ${res.statusCode}');
+
+    if (res.statusCode != 200) {
+      throw Exception('Xóa sản phẩm thất bại');
+    }
   }
 }

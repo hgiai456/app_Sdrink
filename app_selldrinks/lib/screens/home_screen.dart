@@ -4,6 +4,7 @@ import 'package:app_selldrinks/screens/order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/screens/store_screen.dart';
 import 'package:app_selldrinks/screens/account_overview_screen.dart';
+import 'package:app_selldrinks/screens/cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -75,9 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex == 0
               ? FloatingActionButton(
                 onPressed: () {
-                  setState(() {
-                    _currentIndex = 1; // Chuyển sang trang đặt hàng
-                  });
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => CartScreen()));
                 },
                 backgroundColor: Theme.of(context).primaryColor,
                 child: const Icon(Icons.shopping_bag, color: Colors.white),
