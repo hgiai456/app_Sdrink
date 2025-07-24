@@ -153,6 +153,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       backgroundColor: highlandsTheme.appBarTheme.foregroundColor,
+
       body: Column(
         children: [
           Padding(

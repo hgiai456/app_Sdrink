@@ -50,9 +50,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result['success']) {
       String token = result['token'];
+      print('Login - Token received: $token'); // Debug token
+
       // Lưu token và thông tin user vào SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
+
+      // Verify token was saved
+      String? savedToken = prefs.getString('token');
+      print(
+        'Login - Token saved verification: $savedToken',
+      ); // Debug saved token
 
       // Lưu thông tin user
       var userData = result['data']?['user'];
