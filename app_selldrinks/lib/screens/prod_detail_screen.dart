@@ -107,7 +107,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       print(
         'Step 4: Calling CartService with productDetailId: ${productDetail.id}',
       );
-      await CartService.addToCart(
+      await CartService().addToCart(
         productDetailId: productDetail.id,
         quantity: _quantity,
       );
@@ -154,6 +154,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       backgroundColor: highlandsTheme.appBarTheme.foregroundColor,
+
       body: Column(
         children: [
           Padding(

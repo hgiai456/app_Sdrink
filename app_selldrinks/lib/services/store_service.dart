@@ -5,11 +5,7 @@ import '../models/store.dart';
 import 'package:app_selldrinks/services/port.dart';
 
 class StoreService {
-<<<<<<< HEAD
-  static const String apiUrl = 'http://10.0.2.2:3003/api/stores';
-=======
   static const String apiUrl = '${Port.baseUrl}/stores';
->>>>>>> f06df51d2dea33a30df7823e3efe698b1488235c
 
   Future<List<Store>> fetchStores() async {
     final response = await http.get(Uri.parse('${Port.baseUrl}/stores'));

@@ -28,7 +28,7 @@ class OrderDetailAdmin {
       quantity: json['quantity'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      productDetail: json['product_detail'],
+      productDetail: json['product_details'],
     );
   }
 }

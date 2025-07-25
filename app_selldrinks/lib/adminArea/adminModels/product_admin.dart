@@ -22,7 +22,7 @@ class ProductAdmin {
       description: json['description'] ?? '',
       image: json['image'],
       categoryId: json['category_id'],
-      proDetails: json['ProDetails'],
+      proDetails: json['product_details'],
     );
   }
 
@@ -34,7 +34,7 @@ class ProductAdmin {
       'category_id': categoryId,
     };
     if (proDetails != null) {
-      data['ProDetails'] = proDetails;
+      data['product_details'] = proDetails;
     }
     return data;
   }

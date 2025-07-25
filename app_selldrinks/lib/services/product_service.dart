@@ -6,11 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:app_selldrinks/services/port.dart';
 
 class ProductService {
-<<<<<<< HEAD
-  static const String baseUrl = 'http://10.0.2.2:3003/api';
-=======
   static const String baseUrl = Port.baseUrl;
->>>>>>> f06df51d2dea33a30df7823e3efe698b1488235c
   // Lấy tất cả sản phẩm
   static Future<List<Product>> getProducts() async {
     final response = await http.get(Uri.parse('${Port.baseUrl}/products'));
