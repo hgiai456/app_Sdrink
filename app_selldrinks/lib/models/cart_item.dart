@@ -27,7 +27,7 @@ class CartItem {
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
           json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-      prodetail: json['prodetail'], // Đổi từ productDetail sang prodetail
+      prodetail: json['product_details'], // Đổi từ productDetail sang prodetail
     );
   }
 
@@ -70,7 +70,7 @@ class CartItem {
       'quantity': quantity,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
-      'prodetail': prodetail,
+      'product_details': prodetail,
     };
   }
 }

@@ -14,7 +14,7 @@ class ProductDetailService {
       );
 
       final url = Uri.parse(
-        '${Port.baseUrl}/prodetail/find?pro_id=$productId&size_id=$sizeId',
+        '${Port.baseUrl}/prodetail?product_id=$productId&size_id=$sizeId',
       );
       print('ProductDetailService - URL: $url');
 

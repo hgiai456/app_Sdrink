@@ -339,7 +339,34 @@ class CartService {
     }
   }
 
-  // Method thanh toán giỏ hàng
+  // Method cập nhật user_id cho cart hiện tại
+  Future<void> updateCartUserId(int cartId, int userId) async {
+    final token = await _getToken();
+
+    print('updateCartUserId - Cart ID: $cartId, User ID: $userId');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    final body = jsonEncode({'user_id': userId});
+
+    final res = await http.put(
+      Uri.parse('${Port.baseUrl}/carts/$cartId'),
+      headers: headers,
+      body: body,
+    );
+
+    print('updateCartUserId - Response status: ${res.statusCode}');
+    print('updateCartUserId - Response body: ${res.body}');
+
+    if (res.statusCode != 200) {
+      throw Exception('Cập nhật user_id cho cart thất bại');
+    }
+  }
+
+  // Method thanh toán giỏ hàng - CẬP NHẬT
   Future<Map<String, dynamic>> checkout({
     required int cartId,
     required String phone,
@@ -347,19 +374,35 @@ class CartService {
     required String address,
   }) async {
     final token = await _getToken();
+    final userId = await _getUserId();
+
     print('checkout - Token: $token');
     print('checkout - Cart ID: $cartId');
+    print('checkout - User ID: $userId');
+
+    // BƯỚC 1: Cập nhật user_id cho cart trước khi checkout
+    if (userId != null) {
+      try {
+        await updateCartUserId(cartId, userId);
+        print('checkout - Updated cart with user_id: $userId');
+      } catch (e) {
+        print('checkout - Warning: Could not update cart user_id: $e');
+        // Vẫn tiếp tục checkout nếu cập nhật thất bại
+      }
+    }
 
     final headers = {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
+    // BƯỚC 2: Thực hiện checkout
     final body = jsonEncode({
       'cart_id': cartId,
       'phone': phone,
       'note': note,
       'address': address,
+      if (userId != null) 'user_id': userId, // Vẫn gửi user_id để đảm bảo
     });
 
     print('checkout - Request URL: ${Port.baseUrl}/carts/checkout');
