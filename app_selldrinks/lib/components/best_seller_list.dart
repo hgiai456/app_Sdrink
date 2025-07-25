@@ -2,6 +2,7 @@ import 'package:app_selldrinks/models/product.dart';
 import 'package:app_selldrinks/screens/prod_detail_screen.dart';
 import 'package:app_selldrinks/services/product_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BestSellerList extends StatefulWidget {
   const BestSellerList({super.key});
@@ -14,6 +15,7 @@ class _BestSellerListState extends State<BestSellerList> {
   List<Product> _bestSellers = [];
   bool _isLoadingProducts = true;
   String _productError = '';
+  final NumberFormat numberFormat = NumberFormat('#,###', 'vi_VN');
 
   @override
   void initState() {
@@ -21,7 +23,6 @@ class _BestSellerListState extends State<BestSellerList> {
     _loadBestSellers();
   }
 
-  // Hàm load sản phẩm bán chạy từ API
   Future<void> _loadBestSellers() async {
     try {
       setState(() {
@@ -29,15 +30,27 @@ class _BestSellerListState extends State<BestSellerList> {
         _productError = '';
       });
 
+      print('BestSellerList - Starting to load products...');
       final products = await ProductService.getProducts();
 
+      print('BestSellerList - Loaded ${products.length} products');
+
       // Lấy tối đa 10 sản phẩm đầu tiên làm "bán chạy nhất"
-      // Bạn có thể thay đổi logic này tùy theo API
       setState(() {
         _bestSellers = products.take(10).toList();
         _isLoadingProducts = false;
       });
-    } catch (e) {
+
+      print('BestSellerList - Best sellers count: ${_bestSellers.length}');
+
+      // Log từng sản phẩm để debug
+      for (int i = 0; i < _bestSellers.length; i++) {
+        final product = _bestSellers[i];
+        print('BestSeller $i: ${product.name} - ${product.priceRange}');
+      }
+    } catch (e, stackTrace) {
+      print('BestSellerList - Error loading products: $e');
+      print('BestSellerList - Stack trace: $stackTrace');
       setState(() {
         _productError = 'Không thể tải sản phẩm: ${e.toString()}';
         _isLoadingProducts = false;
@@ -69,6 +82,7 @@ class _BestSellerListState extends State<BestSellerList> {
               TextButton(
                 onPressed: () {
                   // Navigator đến trang xem tất cả sản phẩm
+                  print('Navigate to all products');
                 },
                 child: const Text(
                   'Xem tất cả',
@@ -98,7 +112,7 @@ class _BestSellerListState extends State<BestSellerList> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Colors.red, size: 32),
+            const Icon(Icons.error_outline, color: Colors.red, size: 32),
             const SizedBox(height: 8),
             Text(
               _productError,
@@ -132,12 +146,12 @@ class _BestSellerListState extends State<BestSellerList> {
         final product = _bestSellers[index];
         return GestureDetector(
           onTap: () {
+            print('Tapped on product: ${product.name} (ID: ${product.id})');
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) =>
-                        ProductDetailScreen(productId: _bestSellers[index].id),
+                    (context) => ProductDetailScreen(productId: product.id),
               ),
             );
           },
@@ -165,9 +179,9 @@ class _BestSellerListState extends State<BestSellerList> {
                     Container(
                       height: 100,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5), // Light Gray
-                        borderRadius: const BorderRadius.vertical(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF5F5F5), // Light Gray
+                        borderRadius: BorderRadius.vertical(
                           top: Radius.circular(16),
                         ),
                       ),
@@ -181,29 +195,30 @@ class _BestSellerListState extends State<BestSellerList> {
                         ),
                       ),
                     ),
-                    // Badge giảm giá (tùy chọn - có thể thêm logic tính giảm giá)
-                    // Positioned(
-                    //   top: 8,
-                    //   left: 8,
-                    //   child: Container(
-                    //     padding: const EdgeInsets.symmetric(
-                    //       horizontal: 6,
-                    //       vertical: 2,
-                    //     ),
-                    //     decoration: BoxDecoration(
-                    //       color: const Color(0xFF383838), // Dark Gray
-                    //       borderRadius: BorderRadius.circular(8),
-                    //     ),
-                    //     child: const Text(
-                    //       '20%',
-                    //       style: TextStyle(
-                    //         color: Colors.white,
-                    //         fontSize: 10,
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    // Badge sale nếu có discount
+                    if (_hasDiscount(product))
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Sale',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
 
@@ -236,7 +251,7 @@ class _BestSellerListState extends State<BestSellerList> {
                               color: Colors.amber[600],
                             ),
                             const SizedBox(width: 2),
-                            Text(
+                            const Text(
                               '4.5', // Giá trị mặc định
                               style: TextStyle(
                                 fontSize: 11,
@@ -244,7 +259,7 @@ class _BestSellerListState extends State<BestSellerList> {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Text(
+                            const Text(
                               '(100+)', // Giá trị mặc định
                               style: TextStyle(
                                 fontSize: 10,
@@ -256,20 +271,8 @@ class _BestSellerListState extends State<BestSellerList> {
 
                         const Spacer(),
 
-                        // Giá từ ProDetails
-                        Row(
-                          children: [
-                            Text(
-                              '${_getProductPrice(product)} VNĐ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Color(0xFF383838), // Dark Gray
-                              ),
-                            ),
-                            // Có thể thêm giá gốc nếu có logic giảm giá
-                          ],
-                        ),
+                        // Hiển thị giá
+                        _buildPriceDisplay(product),
                       ],
                     ),
                   ),
@@ -299,13 +302,14 @@ class _BestSellerListState extends State<BestSellerList> {
       imagePath,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
+        print('Image load error for $productName: $error');
         return Container(
           color: const Color(0xFFF5F5F5), // Light Gray
           child: const Icon(
             Icons.broken_image,
             size: 40,
-            color: Color(0xFF808080),
-          ), // Medium Gray
+            color: Color(0xFF808080), // Medium Gray
+          ),
         );
       },
       loadingBuilder: (context, child, loadingProgress) {
@@ -328,8 +332,23 @@ class _BestSellerListState extends State<BestSellerList> {
     );
   }
 
-  int _getProductPrice(Product product) {
-    final price = product.price;
-    return price;
+  // Widget hiển thị giá sản phẩm
+  Widget _buildPriceDisplay(Product product) {
+    // Sử dụng priceRange string từ Product model
+    return Text(
+      product.priceRange,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: Color(0xFF383838), // Dark Gray
+      ),
+    );
+  }
+
+  // Kiểm tra sản phẩm có giảm giá không
+  bool _hasDiscount(Product product) {
+    // Tạm thời return false vì SimpleProductDetail không có oldprice
+    // Bạn có thể implement logic này sau
+    return false;
   }
 }

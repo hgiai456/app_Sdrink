@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/product_service.dart';
 import '../services/cart_service.dart';
 import '../services/product_detail_service.dart';
@@ -28,6 +29,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
+    CartService.debugSession();
     fetchProductDetail();
   }
 
@@ -83,44 +85,76 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
 
-    setState(() {
-      isAddingToCart = true;
-    });
-
     try {
-      print('Step 1: Starting addToCart process');
-      print('ProductId: ${widget.productId}, SizeId: $_selectedSizeId');
+      setState(() {
+        isAddingToCart = true;
+      });
 
-      print('Step 2: Calling ProductDetailService');
+      // Kiểm tra user đã đăng nhập chưa
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('userId');
+
+      print('ProductDetail - Current userId: $userId');
+
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Vui lòng đăng nhập để thêm vào giỏ hàng'),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'Đăng nhập',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+            ),
+          ),
+        );
+        return;
+      }
+
+      // Lấy product detail
       final productDetail =
           await ProductDetailService.getProductDetailIdByProductAndSize(
             productId: widget.productId,
             sizeId: _selectedSizeId!,
           );
 
-      print('Step 3: ProductDetailService result: $productDetail');
+      print('ProductDetailService result: $productDetail');
 
       if (productDetail == null) {
         throw Exception('Không tìm thấy thông tin product detail');
       }
 
       print(
-        'Step 4: Calling CartService with productDetailId: ${productDetail.id}',
+        'Adding product detail ID: ${productDetail.id} with quantity: $_quantity',
       );
-      await CartService.addToCart(
+
+      // Thêm vào cart
+      final success = await CartService.addToCart(
         productDetailId: productDetail.id,
         quantity: _quantity,
       );
 
-      print('Step 5: Successfully added to cart');
-
-      if (mounted) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã thêm sản phẩm vào giỏ hàng'),
+          SnackBar(
+            content: Text('Đã thêm ${productDetail.name} vào giỏ hàng'),
             backgroundColor: Colors.green,
+            action: SnackBarAction(
+              label: 'Xem giỏ hàng',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/cart');
+              },
+            ),
           ),
         );
+
+        // Reset quantity
+        setState(() {
+          _quantity = 1;
+        });
       }
     } catch (e, stackTrace) {
       print('Error in _addToCart: $e');

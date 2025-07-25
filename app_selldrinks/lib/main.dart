@@ -1,3 +1,5 @@
+import 'package:app_selldrinks/screens/account_overview_screen.dart';
+import 'package:app_selldrinks/screens/home_screen.dart';
 import 'package:app_selldrinks/screens/login_Screen.dart';
 import 'package:flutter/material.dart';
 import './themes/highland_theme.dart'; // Import theme
@@ -17,6 +19,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: highlandsTheme,
       home: LoginScreen(),
+      // Thêm phần này
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/account': (context) => const AccountOverviewScreen(),
+        // Thêm các routes khác nếu cần
+      },
     );
   }
 }

@@ -9,15 +9,47 @@ class ProductService {
   static const String baseUrl = Port.baseUrl;
   // Lấy tất cả sản phẩm
   static Future<List<Product>> getProducts() async {
-    final response = await http.get(Uri.parse('${Port.baseUrl}/products'));
+    try {
+      print('ProductService - Fetching products...');
+      final response = await http.get(Uri.parse('${Port.baseUrl}/products'));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      return (data['data'] as List)
-          .map((json) => Product.fromJson(json))
-          .toList();
-    } else {
-      throw Exception('Failed to load products');
+      print('ProductService - Response status: ${response.statusCode}');
+      print('ProductService - Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        if (data['data'] != null) {
+          final List<dynamic> productsJson = data['data'];
+          print('ProductService - Found ${productsJson.length} products');
+
+          List<Product> products = [];
+          for (int i = 0; i < productsJson.length; i++) {
+            try {
+              print(
+                'ProductService - Parsing product ${i + 1}/${productsJson.length}',
+              );
+              final product = Product.fromJson(productsJson[i]);
+              products.add(product);
+              print('ProductService - Successfully parsed: ${product.name}');
+            } catch (e) {
+              print('ProductService - Error parsing product ${i + 1}: $e');
+              print('ProductService - Product data: ${productsJson[i]}');
+              // Continue với sản phẩm khác thay vì throw error
+            }
+          }
+
+          print(
+            'ProductService - Successfully parsed ${products.length} products',
+          );
+          return products;
+        }
+      }
+
+      throw Exception('Failed to load products: ${response.statusCode}');
+    } catch (e) {
+      print('ProductService - Error in getProducts: $e');
+      rethrow;
     }
   }
 

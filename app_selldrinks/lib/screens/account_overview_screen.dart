@@ -1,6 +1,7 @@
 import 'package:app_selldrinks/screens/dieukhoandv_screen.dart';
 import 'package:app_selldrinks/screens/faq_screen.dart';
 import 'package:app_selldrinks/screens/feedback_screen.dart';
+import 'package:app_selldrinks/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_selldrinks/screens/profile_screen.dart';
@@ -460,7 +461,35 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _showLogoutDialog,
+                    onPressed: () async {
+                      // Close dialog
+                      Navigator.of(context).pop();
+
+                      try {
+                        // Logout immediately without loading dialog
+                        await UserService.logout();
+
+                        // Navigate immediately
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      } catch (e) {
+                        print('Logout error: $e');
+
+                        // Show simple error
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Lỗi đăng xuất'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF383838),
                       shape: RoundedRectangleBorder(
@@ -493,35 +522,106 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Đăng Xuất'),
-          content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Đăng Xuất',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF383838),
+            ),
+          ),
+          content: const Text(
+            'Bạn có chắc chắn muốn đăng xuất?\n\nViệc đăng xuất sẽ xóa toàn bộ dữ liệu phiên làm việc của bạn bao gồm giỏ hàng và thông tin cá nhân.',
+            style: TextStyle(color: Color(0xFF383838)),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Hủy'),
+              child: const Text(
+                'Hủy',
+                style: TextStyle(
+                  color: Color(0xFF808080),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: const Text('Đăng Xuất'),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF383838),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+              child: const Text(
+                'Đăng Xuất',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove('token');
-                await prefs.remove('firstName');
-                await prefs.remove('lastName');
-                await prefs.remove('email');
-                await prefs.remove('phone');
-                await prefs.remove('address');
-                await prefs.remove('dob');
-                await prefs.remove('gender');
-                await prefs.remove('isVerified');
-                await prefs.remove('createdAt');
-                await prefs.remove('updatedAt');
+                Navigator.of(context).pop(); // Close dialog first
 
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                // Show loading dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder:
+                      (context) => const AlertDialog(
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Đang đăng xuất...'),
+                          ],
+                        ),
+                      ),
                 );
+
+                try {
+                  print('Starting logout process');
+
+                  // Use UserService to logout and clear all data
+                  await UserService.logout();
+
+                  print('Logout completed successfully');
+
+                  // Small delay to show loading
+                  await Future.delayed(const Duration(milliseconds: 500));
+
+                  if (mounted) {
+                    // Close loading dialo
+                    // Navigate to login and clear all previous routes
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                      (route) => false, // This removes all previous routes
+                    );
+
+                    // Show success message on login screen
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Đăng xuất thành công'),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    });
+                  }
+                } catch (e) {
+                  print('Logout error: $e');
+                }
               },
             ),
           ],
