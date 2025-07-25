@@ -4,6 +4,7 @@ import 'package:app_selldrinks/models/cart_item.dart';
 import 'package:app_selldrinks/services/cart_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:app_selldrinks/screens/order_confirm_screen.dart'; // Thêm import này
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -185,7 +186,7 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  // Thanh toán
+  // Thanh toán - CẬP NHẬT
   Future<void> _handleCheckout() async {
     if (cartItems.isEmpty) {
       ScaffoldMessenger.of(
@@ -194,43 +195,20 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
 
-    if (userPhone.isEmpty || userAddress.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng cập nhật thông tin cá nhân')),
-      );
-      return;
-    }
-
-    setState(() {
-      isCheckingOut = true;
-    });
-
-    try {
-      final result = await _cartService.checkout(
-        cartId: currentCartId!,
-        phone: userPhone,
-        note: "Đơn hàng từ app",
-        address: userAddress,
-      );
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Đặt hàng thành công!')));
-
-      // Chuyển về màn hình chính
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi thanh toán: ${e.toString()}')),
-      );
-    } finally {
-      setState(() {
-        isCheckingOut = false;
-      });
-    }
+    // Chuyển đến màn hình xác nhận thông tin thay vì checkout trực tiếp
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => OrderConfirmScreen(
+              cartId: currentCartId!,
+              totalAmount: totalAmount,
+              defaultName: userName,
+              defaultPhone: userPhone,
+              defaultAddress: userAddress,
+            ),
+      ),
+    );
   }
 
   @override
