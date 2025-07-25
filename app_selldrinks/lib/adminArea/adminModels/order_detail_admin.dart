@@ -26,9 +26,33 @@ class OrderDetailAdmin {
       productDetailId: json['product_detail_id'],
       price: json['price'],
       quantity: json['quantity'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      productDetail: json['product_details'],
+      createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+      updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
+      productDetail: json['product_details'], // Lấy product_details
     );
+  }
+
+  // Getter để lấy tên sản phẩm
+  String get productName {
+    if (productDetail != null && productDetail!['name'] != null) {
+      return productDetail!['name'];
+    }
+    return 'Sản phẩm không xác định';
+  }
+
+  // Getter để lấy specification
+  String get specification {
+    if (productDetail != null && productDetail!['specification'] != null) {
+      return productDetail!['specification'];
+    }
+    return '';
+  }
+
+  // Getter để lấy oldprice
+  int? get oldPrice {
+    if (productDetail != null && productDetail!['oldprice'] != null) {
+      return productDetail!['oldprice'];
+    }
+    return null;
   }
 }

@@ -11,6 +11,7 @@ class OrderAdmin {
   final String? phone;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Map<String, dynamic>? user; // Thêm thông tin user
   final List<OrderDetailAdmin> orderDetails;
 
   OrderAdmin({
@@ -24,6 +25,7 @@ class OrderAdmin {
     this.phone,
     required this.createdAt,
     required this.updatedAt,
+    this.user, // Thêm user
     required this.orderDetails,
   });
 
@@ -39,6 +41,7 @@ class OrderAdmin {
       phone: json['phone'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      user: json['user'], // Thêm user từ JSON
       orderDetails:
           (json['order_details'] is List && json['order_details'] != null)
               ? (json['order_details'] as List)
@@ -46,6 +49,14 @@ class OrderAdmin {
                   .toList()
               : [],
     );
+  }
+
+  // Getter để lấy tên user
+  String get userName {
+    if (user != null && user!['name'] != null) {
+      return user!['name'];
+    }
+    return 'Khách hàng';
   }
 
   Map<String, dynamic> toJson() {
