@@ -32,12 +32,14 @@ class Product {
       description: json['description'],
       imageUrl: json['image'],
       price:
-          json['ProDetails'] != null &&
-                  (json['ProDetails'] as List).isNotEmpty &&
-                  json['ProDetails'][0]['price'] != null
-              ? (json['ProDetails'][0]['price'] is int
-                  ? json['ProDetails'][0]['price']
-                  : int.tryParse(json['ProDetails'][0]['price'].toString()) ??
+          json['product_details'] != null &&
+                  (json['product_details'] as List).isNotEmpty &&
+                  json['product_details'][0]['price'] != null
+              ? (json['product_details'][0]['price'] is int
+                  ? json['product_details'][0]['price']
+                  : int.tryParse(
+                        json['product_details'][0]['price'].toString(),
+                      ) ??
                       0)
               : 0,
       brandId: json['brand_id'] ?? 0, // Xử lý trường hợp null
@@ -45,8 +47,8 @@ class Product {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       productDetails:
-          json['productDetails'] != null
-              ? (json['productDetails'] as List)
+          json['product_details'] != null
+              ? (json['product_details'] as List)
                   .map((detail) => ProductDetail.fromJson(detail))
                   .toList()
               : null,
@@ -63,7 +65,7 @@ class Product {
       'category_id': categoryId,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
-      'productDetails':
+      'product_details':
           productDetails?.map((detail) => detail.toJson()).toList(),
     };
   }
