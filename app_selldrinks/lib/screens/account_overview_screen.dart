@@ -494,24 +494,51 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Đăng Xuất'),
-          content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Đăng Xuất',
+            style: TextStyle(
+              color: Color(0xFF383838),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          content: const Text(
+            'Bạn có chắc chắn muốn đăng xuất?',
+            style: TextStyle(
+              color: Color(0xFF606060), // Màu xám nhạt hơn cho nội dung
+              fontSize: 16,
+              height: 1.4,
+            ),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Hủy'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF808080),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Hủy',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
             ),
-            TextButton(
-              child: const Text('Đăng Xuất'),
+            ElevatedButton(
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
-
-                // Lấy user ID trước khi xóa để xóa session
                 final userId = prefs.getInt('userId');
 
-                // Xóa session cho user hiện tại
                 if (userId != null) {
                   await CartService().clearSessionForUser(
                     specificUserId: userId,
@@ -520,7 +547,7 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                   await CartService().clearSession();
                 }
 
-                // Xóa tất cả thông tin user
+                // Clear all user data
                 await prefs.remove('token');
                 await prefs.remove('userId');
                 await prefs.remove('userName');
@@ -541,11 +568,28 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
 
                 print('Logout - All user data and session cleared');
 
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(
+                  0xFF383838,
+                ), // Màu đỏ cho nút đăng xuất
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Đăng Xuất',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         );

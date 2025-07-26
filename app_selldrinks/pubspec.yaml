@@ -36,7 +36,7 @@ dependencies:
   http: ^0.13.6
   webview_flutter: ^4.4.2
   url_launcher: ^6.2.2 # Thêm dòng này
-  tawk_to: ^0.6.0 # Thêm package này
+  font_awesome_flutter: ^10.6.0 # bạn đã có
 
 dev_dependencies:
   flutter_test:

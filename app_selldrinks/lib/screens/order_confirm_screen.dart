@@ -66,35 +66,91 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Xác nhận đặt hàng'),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Xác nhận đặt hàng',
+              style: TextStyle(
+                color: Color(0xFF383838),
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Tên: ${_nameController.text}'),
-                Text('SĐT: ${_phoneController.text}'),
-                Text('Địa chỉ: ${_addressController.text}'),
-                Text('Ghi chú: ${_noteController.text}'),
+                _buildInfoRow('Tên:', _nameController.text),
                 const SizedBox(height: 8),
-                Text(
-                  'Tổng tiền: ${NumberFormat('#,### đ').format(widget.totalAmount)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                _buildInfoRow('SĐT:', _phoneController.text),
+                const SizedBox(height: 8),
+                _buildInfoRow('Địa chỉ:', _addressController.text),
+                const SizedBox(height: 8),
+                _buildInfoRow('Ghi chú:', _noteController.text),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Tổng tiền:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xFF383838),
+                        ),
+                      ),
+                      Text(
+                        NumberFormat('#,### đ').format(widget.totalAmount),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xFF383838),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Hủy'),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF808080),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'Hủy',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF383838),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: const Text(
                   'Xác nhận',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -589,6 +645,35 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           textAlign: TextAlign.center,
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 60,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFF808080),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFF383838),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
