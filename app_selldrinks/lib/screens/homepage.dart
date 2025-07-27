@@ -1,5 +1,6 @@
 import 'package:app_selldrinks/components/best_seller_list.dart';
 import 'package:app_selldrinks/components/category_list.dart';
+import 'package:app_selldrinks/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../models/bannerhome.dart';
@@ -131,9 +132,18 @@ class _HomePageState extends State<HomePage> {
               ),
               child: TextField(
                 style: TextStyle(fontSize: 14),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SearchScreen(),
+                    ),
+                  );
+                },
                 decoration: InputDecoration(
                   hintText: 'Tìm kiếm sản phẩm...',
                   hintStyle: TextStyle(color: Color(0xFF888080), fontSize: 14),
+
                   prefixIcon: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Icon(

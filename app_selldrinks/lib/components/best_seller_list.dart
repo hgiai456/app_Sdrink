@@ -260,7 +260,7 @@ class _BestSellerListState extends State<BestSellerList> {
                         Row(
                           children: [
                             Text(
-                              '${_getProductPrice(product)} VNĐ',
+                              '${_getProductPrice(product).toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} vnđ',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,

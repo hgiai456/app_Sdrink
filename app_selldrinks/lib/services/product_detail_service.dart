@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'package:app_selldrinks/services/port.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_selldrinks/models/product_detail.dart';
 import 'package:app_selldrinks/services/port.dart';
 
 class ProductDetailService {
+  static const String baseUrl = Port.baseUrl;
+
   static Future<ProductDetail?> getProductDetailIdByProductAndSize({
     required int productId,
     required int sizeId,
@@ -31,6 +34,7 @@ class ProductDetailService {
 
         if (jsonResponse['data'] != null) {
           print('ProductDetailService - Data found: ${jsonResponse['data']}');
+
           return ProductDetail.fromJson(jsonResponse['data']);
         }
       }

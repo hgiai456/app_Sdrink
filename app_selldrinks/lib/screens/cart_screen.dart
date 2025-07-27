@@ -228,12 +228,12 @@ class _CartScreenState extends State<CartScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF383838),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed:
               () => Navigator.pushReplacement(
                 context,
@@ -750,9 +750,9 @@ class _CartScreenState extends State<CartScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF383838) : Colors.white,
+          color: isSelected ? const Color(0xFF383838) : Colors.white,
           border: Border.all(
             color: Color(0xFF383838).withOpacity(isSelected ? 1 : 0.3),
           ),
@@ -761,7 +761,7 @@ class _CartScreenState extends State<CartScreen> {
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? Colors.white : Color(0xFF383838),
+            color: isSelected ? Colors.white : const Color(0xFF383838),
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),

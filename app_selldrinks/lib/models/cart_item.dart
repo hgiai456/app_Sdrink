@@ -1,3 +1,5 @@
+import 'package:app_selldrinks/models/product_detail.dart';
+
 class CartItem {
   final int id;
   final int cartId;

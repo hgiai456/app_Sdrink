@@ -336,14 +336,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    '35 Thang Long Tan Binh HCMC',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ],
               ),
             ),
