@@ -1,8 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <application
-        android:label="app_selldrinks"
+        android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:exported="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="app_selldrinks">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -14,7 +19,60 @@
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
+                 while the Flutter UI initializes. After that, this theme continuesI/cr_LibraryLoader( 4199): Successfully loaded native library
+I/cr_CachingUmaRecorder( 4199): Flushed 7 samples from 7 histograms, 0 samples were dropped.
+I/cr_CombinedPProvider( 4199): #registerProvider() provider:WV.J8@7a799e7 isPolicyCacheEnabled:false policyProvidersSize:0
+I/cr_PolicyProvider( 4199): #setManagerAndSource() 0
+I/.app_selldrinks( 4199): AssetManager2(0x72fe2e84fa38) locale list changing from [] to [en-US]
+I/.app_selldrinks( 4199): AssetManager2(0x72fe2e890498) locale list changing from [] to [en-US]
+I/cr_CombinedPProvider( 4199): #linkNativeInternal() 1
+I/cr_AppResProvider( 4199): #getApplicationRestrictionsFromUserManager() Bundle[EMPTY_PARCEL]
+I/cr_PolicyProvider( 4199): #notifySettingsAvailable() 0
+I/cr_CombinedPProvider( 4199): #onSettingsAvailable() 0
+I/cr_CombinedPProvider( 4199): #flushPolicies()
+W/chromium( 4199): [WARNING:net/dns/dns_config_service_android.cc:69] Failed to read DnsConfig.
+I/CameraManagerGlobal( 4199): Connecting to camera service
+W/HWUI    ( 4199): Image decoding logging dropped!
+W/HWUI    ( 4199): Image decoding logging dropped!
+W/cr_media( 4199): BLUETOOTH_CONNECT permission is missing.
+W/cr_media( 4199): getBluetoothAdapter() requires BLUETOOTH permission
+W/cr_media( 4199): registerBluetoothIntentsIfNeeded: Requires BLUETOOTH permission
+W/libc    ( 4199): Access denied finding property "vendor.mesa.log"
+W/libc    ( 4199): Access denied finding property "vendor.mesa.log.file"
+E/MESA    ( 4199): Failed to open rendernode: No such file or directory
+W/WindowOnBackDispatcher( 4199): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 4199): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+I/PlatformViewsController( 4199): Hosting view in view hierarchy for platform view: 0
+I/PlatformViewsController( 4199): PlatformView is using SurfaceProducer backend
+D/vulkan  ( 4199): searching for layers in '/data/app/~~38mWtj7hRI8tgGCaVk4Keg==/com.example.app_selldrinks-xmjo480Yic_CH3GTQgrsSQ==/lib/x86_64'
+D/vulkan  ( 4199): searching for layers in '/data/app/~~38mWtj7hRI8tgGCaVk4Keg==/com.example.app_selldrinks-xmjo480Yic_CH3GTQgrsSQ==/base.apk!/lib/x86_64'
+W/libc    ( 4199): Access denied finding property "vendor.mesa.vk.trace.per.submit"
+W/libc    ( 4199): Access denied finding property "vendor.mesa.gallium.print.optio"
+W/libc    ( 4199): Access denied finding property "vendor.mesa.vk.trace.frame"
+W/libc    ( 4199): Access denied finding property "vendor.mesa.vk.wsi.headless.swa"
+W/VideoCapabilities( 4199): Unsupported mime video/apv
+W/VideoCapabilities( 4199): Unsupported mime video/apv
+W/VideoCapabilities( 4199): Unsupported mime video/apv
+W/VideoCapabilities( 4199): Unsupported mime video/apv
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/chromium( 4199): [INFO:CONSOLE:2] "Uncaught SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.", source: https://embed.tawk.to/_s/v4/app/6880b98ef42/js/twk-chunk-vendors.js (2)
+W/RemoteInputConnectionImpl( 4199): requestCursorUpdates on inactive InputConnection
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ImageReader_JNI( 4199): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"

@@ -3,9 +3,9 @@ import 'package:app_selldrinks/screens/cart_screen.dart';
 import 'package:app_selldrinks/screens/homepage.dart';
 import 'package:app_selldrinks/screens/order_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:app_selldrinks/screens/store_screen.dart';
 import 'package:app_selldrinks/screens/account_overview_screen.dart';
 import 'package:app_selldrinks/screens/cart_screen.dart';
+import 'package:app_selldrinks/screens/live_chat_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HomePage(),
         OrderScreen(),
         ActivityScreen(),
-        StoreScreen(),
+        const LiveChatPage(), // Tab Hỗ trợ
         AccountOverviewScreen(),
       ];
       _isFirstBuild = false;
@@ -67,8 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Hoạt động',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storefront),
-            label: 'Cửa hàng',
+            icon: Icon(Icons.support_agent),
+            label: 'Hỗ trợ',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Khác'),
         ],
