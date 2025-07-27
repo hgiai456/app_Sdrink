@@ -419,12 +419,12 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF6C63FF), Color(0xFF5A52FF)],
+          colors: [Color(0xFF383838), Color.fromARGB(255, 71, 71, 71)],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.3),
+            color: const Color(0xFF383838).withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -531,7 +531,7 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF6C63FF), Color(0xFF5A52FF)],
+                  colors: [Color(0xFF383838), Color.fromARGB(255, 71, 71, 71)],
                 ),
                 borderRadius: BorderRadius.circular(25),
               ),
@@ -574,12 +574,12 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6C63FF).withOpacity(0.1),
+                  color: const Color(0xFF383838).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.receipt_long,
-                  color: Color(0xFF6C63FF),
+                  color: Color(0xFF383838),
                   size: 20,
                 ),
               ),
@@ -662,13 +662,13 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4CAF50).withOpacity(0.1),
-            const Color(0xFF2E7D32).withOpacity(0.05),
+            const Color(0xFF383838).withOpacity(0.1),
+            const Color.fromARGB(255, 88, 88, 88).withOpacity(0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF4CAF50).withOpacity(0.3),
+          color: const Color(0xFF383838).withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -681,7 +681,7 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4CAF50),
+                  color: const Color(0xFF383838),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -729,7 +729,7 @@ class _PaymentQRScreenState extends State<PaymentQRScreen>
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50),
+                color: const Color(0xFF383838),
                 shape: BoxShape.circle,
               ),
               child: Center(
