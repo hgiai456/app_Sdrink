@@ -33,10 +33,13 @@ dependencies:
   intl: ^0.18.0
   shared_preferences: ^2.2.2
   cupertino_icons: ^1.0.8
-  http: ^0.13.6
+  http: ^1.1.0
   webview_flutter: ^4.4.2
   url_launcher: ^6.2.2 # Thêm dòng này
   font_awesome_flutter: ^10.6.0 # bạn đã có
+  qr_flutter: ^4.1.0
+  crypto: ^3.0.3 # Thêm dòng này cho HMAC SHA256
+  dio: ^5.3.2 # HTTP client tốt hơn
 
 dev_dependencies:
   flutter_test:
