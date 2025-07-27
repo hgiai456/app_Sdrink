@@ -34,6 +34,7 @@ class ProductDetailService {
 
         if (jsonResponse['data'] != null) {
           print('ProductDetailService - Data found: ${jsonResponse['data']}');
+
           return ProductDetail.fromJson(jsonResponse['data']);
         }
       }

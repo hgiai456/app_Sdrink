@@ -9,10 +9,6 @@ android {
     namespace = "com.example.app_selldrinks"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
-<<<<<<< HEAD
-
-=======
->>>>>>> 60f7bc0ab3f385e8184b11a8ab71bd81ba75a2e1
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
