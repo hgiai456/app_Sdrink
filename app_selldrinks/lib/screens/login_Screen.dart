@@ -141,9 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 40), //Khoảng cách
               Text(
-                'Chào mừng bạn đến với GH Coffee',
+                'Chào mừng bạn đến với HG Coffee',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF383838),
                 ),

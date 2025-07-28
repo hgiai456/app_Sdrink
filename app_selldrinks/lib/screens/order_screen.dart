@@ -550,7 +550,7 @@ class _OrderScreen extends State<OrderScreen> {
                                                                 null &&
                                                             product['product_details']
                                                                 .isNotEmpty
-                                                        ? '${product['product_details'][0]['price']} ₫'
+                                                        ? '${product['product_details'][0]['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ₫'
                                                         : 'Liên hệ',
                                                     style: TextStyle(
                                                       fontSize: 16,
