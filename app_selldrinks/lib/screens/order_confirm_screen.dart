@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:app_selldrinks/services/cart_service.dart';
+import 'package:app_selldrinks/services/payos_service.dart';
 import 'package:app_selldrinks/screens/home_screen.dart';
+import 'package:app_selldrinks/screens/payment_qr_screen.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
@@ -27,6 +30,7 @@ class OrderConfirmScreen extends StatefulWidget {
 class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   final _formKey = GlobalKey<FormState>();
   final CartService _cartService = CartService();
+  final PayOSService _payOSService = PayOSService();
 
   // Controllers cho các field
   late TextEditingController _nameController;
@@ -36,6 +40,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   bool isProcessing = false;
   bool isDelivery = true;
+  String paymentMethod = 'cod'; // 'cod' hoặc 'online'
 
   @override
   void initState() {
@@ -56,13 +61,168 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     super.dispose();
   }
 
+  Future<void> _handleOnlinePayment() async {
+    try {
+      // Tạo mã đơn hàng
+      final orderCode = PayOSService.generateOrderCode();
+      final description = 'Ma hoa don $orderCode';
+
+      print('🔄 Creating PayOS payment for order: $orderCode');
+
+      // Tạo link thanh toán PayOS
+      final paymentResult = await _payOSService.createPaymentLink(
+        orderCode: orderCode,
+        amount: widget.totalAmount,
+        description: description,
+        buyerName: _nameController.text.trim(),
+        buyerPhone: _phoneController.text.trim(),
+        buyerAddress: _addressController.text.trim(),
+      );
+
+      print('💰 Payment Result: $paymentResult');
+
+      // ✅ SỬA LỖI: Kiểm tra đúng cách
+      if (paymentResult['success'] == true) {
+        // ✅ Kiểm tra dữ liệu QR
+        final qrCode = paymentResult['qrCode'];
+
+        if (qrCode != null && qrCode.isNotEmpty) {
+          print('✅ QR Code created successfully, navigating to payment screen');
+
+          // Chuyển đến màn hình QR thanh toán
+          final paymentSuccess = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => PaymentQRScreen(
+                    qrData: qrCode,
+                    orderCode: orderCode,
+                    amount: widget.totalAmount,
+                    description: description,
+                  ),
+            ),
+          );
+
+          print('💳 Payment screen result: $paymentSuccess');
+
+          if (paymentSuccess == true) {
+            await _completeOrder(orderCode);
+          } else {
+            print('❌ Payment was cancelled or failed');
+            // Không làm gì, user đã hủy thanh toán
+          }
+        } else {
+          throw Exception(
+            'Không thể tạo mã QR thanh toán - QR code is null or empty',
+          );
+        }
+      } else {
+        throw Exception(
+          paymentResult['message'] ?? 'Lỗi tạo thanh toán - PayOS API failed',
+        );
+      }
+    } catch (e) {
+      print('🚨 Error in _handleOnlinePayment: $e');
+      rethrow; // Ném lỗi lên để _handleConfirmOrder catch
+    }
+  }
+
+  Future<void> _handleCODPayment() async {
+    try {
+      // Tạo mã đơn hàng cho COD
+      final orderCode = PayOSService.generateOrderCode();
+      print('🛒 Processing COD order: $orderCode');
+      await _completeOrder(orderCode);
+    } catch (e) {
+      print('🚨 Error in _handleCODPayment: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _completeOrder(int orderCode) async {
+    try {
+      print('📝 Completing order: $orderCode');
+
+      // Lưu thông tin cập nhật
+      await _saveUpdatedInfo();
+
+      // Gọi API checkout với mã đơn hàng
+      final result = await _cartService.checkout(
+        cartId: widget.cartId,
+        phone: _phoneController.text.trim(),
+        note: '${_noteController.text.trim()} - Ma don hang: $orderCode',
+        address: _addressController.text.trim(),
+      );
+
+      print('✅ Order completed successfully: $result'); // ✅ SỬ DỤNG BIẾN result
+
+      // Hiển thị thông báo thành công
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('🎉 Đặt hàng thành công! Mã: $orderCode'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+
+        // Chuyển về màn hình chính
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print('🚨 Error in _completeOrder: $e');
+      rethrow;
+    }
+  }
+
   Future<void> _handleConfirmOrder() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     // Hiển thị dialog xác nhận
-    final confirm = await showDialog<bool>(
+    final confirm = await _showConfirmDialog();
+    if (confirm != true) return;
+
+    setState(() {
+      isProcessing = true;
+    });
+
+    try {
+      print('🎯 Payment method selected: $paymentMethod');
+
+      if (paymentMethod == 'online') {
+        await _handleOnlinePayment();
+      } else {
+        await _handleCODPayment();
+      }
+    } catch (e) {
+      print('🚨 Error in _handleConfirmOrder: $e');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Lỗi đặt hàng: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isProcessing = false;
+        });
+      }
+    }
+  }
+
+  Future<bool?> _showConfirmDialog() {
+    return showDialog<bool>(
       context: context,
       builder:
           (context) => AlertDialog(
@@ -88,7 +248,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 const SizedBox(height: 8),
                 _buildInfoRow('Địa chỉ:', _addressController.text),
                 const SizedBox(height: 8),
-                _buildInfoRow('Ghi chú:', _noteController.text),
+                _buildInfoRow(
+                  'Thanh toán:',
+                  paymentMethod == 'cod'
+                      ? 'Khi nhận hàng'
+                      : 'Thanh toán online',
+                ),
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -131,6 +296,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   ),
                 ),
                 child: const Text(
+                  // ✅ THÊM DÒNG NÀY - QUAN TRỌNG!
                   'Hủy',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
@@ -156,51 +322,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             ],
           ),
     );
-
-    if (confirm != true) return;
-
-    setState(() {
-      isProcessing = true;
-    });
-
-    try {
-      // Lưu thông tin cập nhật vào SharedPreferences (nếu khách hàng muốn)
-      await _saveUpdatedInfo();
-
-      // Gọi API checkout
-      final result = await _cartService.checkout(
-        cartId: widget.cartId,
-        phone: _phoneController.text.trim(),
-        note: _noteController.text.trim(),
-        address: _addressController.text.trim(),
-      );
-
-      // Hiển thị thông báo thành công
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🎉 Đặt hàng thành công!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      // Chuyển về màn hình chính
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('❌ Lỗi đặt hàng: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      setState(() {
-        isProcessing = false;
-      });
-    }
   }
 
   Future<void> _saveUpdatedInfo() async {
@@ -245,59 +366,19 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.assignment_outlined,
-                            size: 48,
-                            color: Color(0xFF383838),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Xác nhận thông tin đặt hàng',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF383838),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Vui lòng kiểm tra và cập nhật thông tin nếu cần',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
+                    _buildHeaderSection(),
                     const SizedBox(height: 24),
 
                     // Delivery Options
                     _buildDeliveryOptions(),
+                    const SizedBox(height: 24),
 
+                    // Payment Method
+                    _buildPaymentMethodSection(),
                     const SizedBox(height: 24),
 
                     // Customer Info Form
                     _buildCustomerInfoForm(),
-
                     const SizedBox(height: 24),
 
                     // Order Summary
@@ -310,6 +391,153 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             // Bottom Action
             _buildBottomAction(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.assignment_outlined,
+            size: 48,
+            color: Color(0xFF383838),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Xác nhận thông tin đặt hàng',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF383838),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Vui lòng kiểm tra và cập nhật thông tin nếu cần',
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Phương thức thanh toán',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF383838),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildPaymentOption(
+                  '💵 Khi nhận hàng',
+                  'cod',
+                  paymentMethod == 'cod',
+                  () => setState(() => paymentMethod = 'cod'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildPaymentOption(
+                  '📱 Thanh toán online',
+                  'online',
+                  paymentMethod == 'online',
+                  () => setState(() => paymentMethod = 'online'),
+                ),
+              ),
+            ],
+          ),
+          if (paymentMethod == 'online') ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue[600], size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Bạn sẽ được chuyển đến màn hình quét mã QR để thanh toán',
+                      style: TextStyle(fontSize: 12, color: Colors.blue[800]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption(
+    String text,
+    String value,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF383838) : Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF383838) : Colors.grey[300]!,
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.white : const Color(0xFF383838),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -611,7 +839,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     ),
                   )
                   : Text(
-                    '🛒 XÁC NHẬN ĐẶT HÀNG (${NumberFormat('#,### đ').format(widget.totalAmount)})',
+                    paymentMethod == 'online'
+                        ? '📱 THANH TOÁN ONLINE (${NumberFormat('#,### đ').format(widget.totalAmount)})'
+                        : '🛒 XÁC NHẬN ĐẶT HÀNG (${NumberFormat('#,### đ').format(widget.totalAmount)})',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -653,7 +883,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 60,
+          width: 80,
           child: Text(
             label,
             style: const TextStyle(
