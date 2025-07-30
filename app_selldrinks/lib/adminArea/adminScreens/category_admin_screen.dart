@@ -12,31 +12,87 @@ class CategoryAdminScreen extends StatefulWidget {
 }
 
 class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
+  final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
   int totalPage = 1;
   List<CategoryAdmin> categories = [];
-  bool isLoading = true;
+  bool isLoading = false;
+  bool isLoadingMore = false;
+  bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
-    fetchAllCategories();
+    _scrollController.addListener(_onScroll);
+    fetchAllCategories(refresh: true);
   }
 
-  Future<void> fetchAllCategories({int page = 1}) async {
-    setState(() => isLoading = true);
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (!isLoadingMore && hasMoreData) {
+        loadMoreCategories();
+      }
+    }
+  }
+
+  Future<void> fetchAllCategories({bool refresh = false}) async {
+    if (refresh) {
+      setState(() {
+        isLoading = true;
+        currentPage = 1;
+        categories.clear();
+        hasMoreData = true;
+      });
+    }
+
     try {
       final result = await CategoryAdminService.fetchCategories(
         widget.token,
-        page,
+        currentPage,
       );
-      categories = result['categories'];
-      currentPage = result['currentPage'];
-      totalPage = result['totalPage'];
+
+      setState(() {
+        if (refresh) {
+          categories = result['categories'];
+        } else {
+          categories.addAll(result['categories']);
+        }
+        totalPage = result['totalPage'];
+        hasMoreData = currentPage < totalPage;
+        isLoading = false;
+        isLoadingMore = false;
+      });
     } catch (e) {
-      // Xử lý lỗi
+      setState(() {
+        isLoading = false;
+        isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Lỗi tải dữ liệu: $e')));
     }
-    setState(() => isLoading = false);
+  }
+
+  Future<void> loadMoreCategories() async {
+    if (currentPage >= totalPage) return;
+
+    setState(() {
+      isLoadingMore = true;
+      currentPage++;
+    });
+
+    await fetchAllCategories();
+  }
+
+  Future<void> _refreshData() async {
+    await fetchAllCategories(refresh: true);
   }
 
   void showCategoryDialog({CategoryAdmin? category}) {
@@ -53,7 +109,7 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
             ),
             backgroundColor: kLightGray,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -77,6 +133,8 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
+                        filled: true,
+                        fillColor: kWhite,
                       ),
                       validator:
                           (v) =>
@@ -92,6 +150,8 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
+                        filled: true,
+                        fillColor: kWhite,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -122,11 +182,16 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
                           ),
                           onPressed: () async {
                             if (!_formKey.currentState!.validate()) return;
+
                             final newCategory = CategoryAdmin(
                               id: category?.id,
                               name: nameController.text,
-                              image: imageController.text,
+                              image:
+                                  imageController.text.isEmpty
+                                      ? null
+                                      : imageController.text,
                             );
+
                             bool success = false;
                             if (category == null) {
                               success = await CategoryAdminService.addCategory(
@@ -140,17 +205,29 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
                                     widget.token,
                                   );
                             }
+
                             if (success) {
                               Navigator.pop(context);
-                              fetchAllCategories(page: currentPage);
+                              _refreshData();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    category == null
+                                        ? '✅ Thêm danh mục thành công!'
+                                        : '✅ Cập nhật danh mục thành công!',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     category == null
-                                        ? 'Thêm danh mục thất bại!'
-                                        : 'Cập nhật danh mục thất bại!',
+                                        ? '❌ Thêm danh mục thất bại!'
+                                        : '❌ Cập nhật danh mục thất bại!',
                                   ),
+                                  backgroundColor: Colors.red,
                                 ),
                               );
                             }
@@ -167,9 +244,51 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
     );
   }
 
-  Future<void> deleteCategory(int id) async {
-    await CategoryAdminService.deleteCategory(id, widget.token);
-    fetchAllCategories(page: currentPage);
+  Future<void> deleteCategory(CategoryAdmin category) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Xác nhận xóa'),
+            content: Text(
+              'Bạn có chắc chắn muốn xóa danh mục "${category.name}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Xóa', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      final success = await CategoryAdminService.deleteCategory(
+        category.id!,
+        widget.token,
+      );
+      if (success) {
+        _refreshData();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Xóa danh mục thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Xóa danh mục thất bại!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -179,145 +298,266 @@ class _CategoryAdminScreenState extends State<CategoryAdminScreen> {
         title: Text('Quản lý danh mục', style: TextStyle(color: kDarkGray)),
         backgroundColor: kWhite,
         iconTheme: IconThemeData(color: kDarkGray),
+        elevation: 1,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: kDarkGray),
+            onPressed: _refreshData,
+            tooltip: 'Làm mới',
+          ),
+        ],
       ),
       backgroundColor: kLightGray,
-      body:
-          isLoading
-              ? Center(child: CircularProgressIndicator(color: kDarkGray))
-              : Column(
-                children: [
-                  Expanded(
-                    child:
-                        categories.isEmpty
-                            ? Center(
-                              child: Text(
-                                'Không có danh mục nào!',
-                                style: TextStyle(color: kMediumGray),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        color: kDarkGray,
+        child:
+            isLoading
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: kDarkGray),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Đang tải dữ liệu...',
+                        style: TextStyle(color: kMediumGray),
+                      ),
+                    ],
+                  ),
+                )
+                : categories.isEmpty
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.category, size: 64, color: kMediumGray),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Chưa có danh mục nào!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: kMediumGray,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Nhấn nút + để thêm danh mục mới',
+                        style: TextStyle(color: kMediumGray),
+                      ),
+                    ],
+                  ),
+                )
+                : LayoutBuilder(
+                  builder: (context, constraints) {
+                    // ✅ TÍNH TOÁN DYNAMIC CROSS AXIS COUNT DỰA TRÊN SCREEN WIDTH
+                    int crossAxisCount = 2;
+                    if (constraints.maxWidth > 600) {
+                      crossAxisCount = 3;
+                    } else if (constraints.maxWidth > 400) {
+                      crossAxisCount = 2;
+                    } else {
+                      crossAxisCount = 1;
+                    }
+
+                    // ✅ TÍNH TOÁN CHILD ASPECT RATIO ĐỂ TRÁNH OVERFLOW
+                    double childAspectRatio = 0.75;
+                    if (constraints.maxWidth < 400) {
+                      childAspectRatio = 1.2;
+                    }
+
+                    return GridView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(12), // ✅ GIẢM PADDING
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 8, // ✅ GIẢM SPACING
+                        mainAxisSpacing: 8, // ✅ GIẢM SPACING
+                        childAspectRatio: childAspectRatio, // ✅ DYNAMIC RATIO
+                      ),
+                      itemCount:
+                          categories.length +
+                          (isLoadingMore ? crossAxisCount : 0),
+                      itemBuilder: (context, index) {
+                        // ✅ LOADING INDICATORS
+                        if (index >= categories.length) {
+                          return Container(
+                            margin: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: kWhite,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: kDarkGray,
+                                strokeWidth: 2,
                               ),
-                            )
-                            : ListView.builder(
-                              itemCount: categories.length,
-                              itemBuilder: (_, i) {
-                                final c = categories[i];
-                                return Card(
-                                  color: kWhite,
-                                  child: ListTile(
-                                    leading:
-                                        (c.image != null && c.image!.isNotEmpty)
-                                            ? Image.network(
-                                              c.image!,
-                                              width: 50,
-                                              height: 50,
-                                              fit: BoxFit.cover,
-                                            )
-                                            : Icon(
-                                              Icons.image_not_supported,
-                                              color: kMediumGray,
-                                            ),
-                                    title: Text(
-                                      c.name,
-                                      style: TextStyle(color: kDarkGray),
+                            ),
+                          );
+                        }
+
+                        final category = categories[index];
+                        return Card(
+                          color: kWhite,
+                          elevation: 2, // ✅ GIẢM ELEVATION
+                          margin: const EdgeInsets.all(2), // ✅ GIẢM MARGIN
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // ✅ IMAGE CONTAINER VỚI FIXED HEIGHT
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: kLightGray,
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
+                                      ),
                                     ),
-                                    subtitle:
-                                        c.createdAt != null
-                                            ? Text(
-                                              'Tạo: ${c.createdAt}',
-                                              style: TextStyle(
-                                                color: kMediumGray,
-                                              ),
+                                    child:
+                                        category.image != null &&
+                                                category.image!.isNotEmpty
+                                            ? Image.network(
+                                              category.image!,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => _buildDefaultImage(),
+                                              loadingBuilder: (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        color: kDarkGray,
+                                                        strokeWidth: 2,
+                                                      ),
+                                                );
+                                              },
                                             )
-                                            : null,
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                            : _buildDefaultImage(),
+                                  ),
+                                ),
+                                // ✅ CONTENT AREA VỚI CONSTRAINED HEIGHT
+                                Expanded(
+                                  flex: 2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      8,
+                                    ), // ✅ GIẢM PADDING
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize:
+                                          MainAxisSize.min, // ✅ IMPORTANT!
                                       children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.edit,
-                                            color: kDarkGray,
+                                        // ✅ FLEXIBLE TEXT VỚI PROPER CONSTRAINTS
+                                        Flexible(
+                                          child: Text(
+                                            category.name,
+                                            style: TextStyle(
+                                              color: kDarkGray,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12, // ✅ GIẢM FONT SIZE
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          onPressed:
-                                              () => showCategoryDialog(
-                                                category: c,
-                                              ),
                                         ),
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
+                                        const Spacer(),
+                                        // ✅ CONSTRAINED BUTTON ROW
+                                        SizedBox(
+                                          height: 32, // ✅ FIXED HEIGHT
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Flexible(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.edit,
+                                                    color: kDarkGray,
+                                                    size:
+                                                        18, // ✅ GIẢM ICON SIZE
+                                                  ),
+                                                  onPressed:
+                                                      () => showCategoryDialog(
+                                                        category: category,
+                                                      ),
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                        minWidth: 32,
+                                                        minHeight: 32,
+                                                      ),
+                                                ),
+                                              ),
+                                              Flexible(
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                    size:
+                                                        18, // ✅ GIẢM ICON SIZE
+                                                  ),
+                                                  onPressed:
+                                                      () => deleteCategory(
+                                                        category,
+                                                      ),
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                        minWidth: 32,
+                                                        minHeight: 32,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          onPressed:
-                                              () => deleteCategory(c.id!),
                                         ),
                                       ],
                                     ),
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
-                  ),
-                  buildPagination(),
-                ],
-              ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showCategoryDialog(),
-        child: Icon(Icons.add, color: kWhite),
         backgroundColor: kDarkGray,
+        child: Icon(Icons.add, color: kWhite),
+        tooltip: 'Thêm danh mục mới',
       ),
     );
   }
 
-  Widget buildPagination() {
-    List<Widget> pages = [];
-    int start = (currentPage - 2 > 0) ? currentPage - 2 : 1;
-    int end = (currentPage + 2 < totalPage) ? currentPage + 2 : totalPage;
-
-    if (start > 1) {
-      pages.add(pageButton(1));
-      if (start > 2) pages.add(Text('...'));
-    }
-    for (int i = start; i <= end; i++) {
-      pages.add(pageButton(i));
-    }
-    if (end < totalPage) {
-      if (end < totalPage - 1) pages.add(Text('...'));
-      pages.add(pageButton(totalPage));
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: Icon(Icons.chevron_left),
-          onPressed:
-              currentPage > 1
-                  ? () => fetchAllCategories(page: currentPage - 1)
-                  : null,
-        ),
-        ...pages,
-        IconButton(
-          icon: Icon(Icons.chevron_right),
-          onPressed:
-              currentPage < totalPage
-                  ? () => fetchAllCategories(page: currentPage + 1)
-                  : null,
-        ),
-      ],
-    );
-  }
-
-  Widget pageButton(int page) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: page == currentPage ? Colors.blue : Colors.white,
-          foregroundColor: page == currentPage ? Colors.white : Colors.black,
-          minimumSize: Size(36, 36),
-          padding: EdgeInsets.zero,
-        ),
-        onPressed:
-            page == currentPage ? null : () => fetchAllCategories(page: page),
-        child: Text('$page'),
+  // ✅ HELPER METHOD CHO DEFAULT IMAGE
+  Widget _buildDefaultImage() {
+    return Container(
+      color: kLightGray,
+      child: Icon(
+        Icons.category,
+        size: 36, // ✅ RESPONSIVE ICON SIZE
+        color: kMediumGray,
       ),
     );
   }

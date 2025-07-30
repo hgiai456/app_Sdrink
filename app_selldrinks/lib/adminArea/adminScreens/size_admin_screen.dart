@@ -12,28 +12,87 @@ class SizeAdminScreen extends StatefulWidget {
 }
 
 class _SizeAdminScreenState extends State<SizeAdminScreen> {
+  final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
   int totalPage = 1;
   List<SizeAdmin> sizes = [];
-  bool isLoading = true;
+  bool isLoading = false;
+  bool isLoadingMore = false;
+  bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
-    fetchAllSizes();
+    _scrollController.addListener(_onScroll);
+    fetchAllSizes(refresh: true);
   }
 
-  Future<void> fetchAllSizes({int page = 1}) async {
-    setState(() => isLoading = true);
-    try {
-      final result = await SizeAdminService.fetchSizes(widget.token, page);
-      sizes = result['sizes'];
-      currentPage = result['currentPage'];
-      totalPage = result['totalPage'];
-    } catch (e) {
-      // Xử lý lỗi
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (!isLoadingMore && hasMoreData) {
+        loadMoreSizes();
+      }
     }
-    setState(() => isLoading = false);
+  }
+
+  Future<void> fetchAllSizes({bool refresh = false}) async {
+    if (refresh) {
+      setState(() {
+        isLoading = true;
+        currentPage = 1;
+        sizes.clear();
+        hasMoreData = true;
+      });
+    }
+
+    try {
+      final result = await SizeAdminService.fetchSizes(
+        widget.token,
+        currentPage,
+      );
+
+      setState(() {
+        if (refresh) {
+          sizes = result['sizes'];
+        } else {
+          sizes.addAll(result['sizes']);
+        }
+        totalPage = result['totalPage'];
+        hasMoreData = currentPage < totalPage;
+        isLoading = false;
+        isLoadingMore = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Lỗi tải dữ liệu: $e')));
+    }
+  }
+
+  Future<void> loadMoreSizes() async {
+    if (currentPage >= totalPage) return;
+
+    setState(() {
+      isLoadingMore = true;
+      currentPage++;
+    });
+
+    await fetchAllSizes();
+  }
+
+  Future<void> _refreshData() async {
+    await fetchAllSizes(refresh: true);
   }
 
   void showSizeDialog({SizeAdmin? size}) {
@@ -49,7 +108,7 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
             ),
             backgroundColor: kLightGray,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -73,6 +132,8 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
+                        filled: true,
+                        fillColor: kWhite,
                       ),
                       validator:
                           (v) =>
@@ -108,10 +169,12 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
                           ),
                           onPressed: () async {
                             if (!_formKey.currentState!.validate()) return;
+
                             final newSize = SizeAdmin(
                               id: size?.id,
                               name: nameController.text,
                             );
+
                             bool success = false;
                             if (size == null) {
                               success = await SizeAdminService.addSize(
@@ -124,17 +187,29 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
                                 widget.token,
                               );
                             }
+
                             if (success) {
                               Navigator.pop(context);
-                              fetchAllSizes(page: currentPage);
+                              _refreshData();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    size == null
+                                        ? '✅ Thêm size thành công!'
+                                        : '✅ Cập nhật size thành công!',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     size == null
-                                        ? 'Thêm size thất bại!'
-                                        : 'Cập nhật size thất bại!',
+                                        ? '❌ Thêm size thất bại!'
+                                        : '❌ Cập nhật size thất bại!',
                                   ),
+                                  backgroundColor: Colors.red,
                                 ),
                               );
                             }
@@ -151,9 +226,46 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
     );
   }
 
-  Future<void> deleteSize(int id) async {
-    await SizeAdminService.deleteSize(id, widget.token);
-    fetchAllSizes(page: currentPage);
+  Future<void> deleteSize(SizeAdmin size) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Xác nhận xóa'),
+            content: Text('Bạn có chắc chắn muốn xóa size "${size.name}"?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Xóa', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      final success = await SizeAdminService.deleteSize(size.id!, widget.token);
+      if (success) {
+        _refreshData();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Xóa size thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Xóa size thất bại!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -163,133 +275,132 @@ class _SizeAdminScreenState extends State<SizeAdminScreen> {
         title: Text('Quản lý size', style: TextStyle(color: kDarkGray)),
         backgroundColor: kWhite,
         iconTheme: IconThemeData(color: kDarkGray),
+        elevation: 1,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: kDarkGray),
+            onPressed: _refreshData,
+            tooltip: 'Làm mới',
+          ),
+        ],
       ),
       backgroundColor: kLightGray,
-      body:
-          isLoading
-              ? Center(child: CircularProgressIndicator(color: kDarkGray))
-              : Column(
-                children: [
-                  Expanded(
-                    child:
-                        sizes.isEmpty
-                            ? Center(
-                              child: Text(
-                                'Không có size nào!',
-                                style: TextStyle(color: kMediumGray),
-                              ),
-                            )
-                            : ListView.builder(
-                              itemCount: sizes.length,
-                              itemBuilder: (_, i) {
-                                final s = sizes[i];
-                                return Card(
-                                  color: kWhite,
-                                  child: ListTile(
-                                    leading: Icon(
-                                      Icons.straighten,
-                                      color: kDarkGray,
-                                    ),
-                                    title: Text(
-                                      s.name,
-                                      style: TextStyle(color: kDarkGray),
-                                    ),
-                                    subtitle:
-                                        s.createdAt != null
-                                            ? Text(
-                                              'Tạo: ${s.createdAt}',
-                                              style: TextStyle(
-                                                color: kMediumGray,
-                                              ),
-                                            )
-                                            : null,
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.edit,
-                                            color: kDarkGray,
-                                          ),
-                                          onPressed:
-                                              () => showSizeDialog(size: s),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () => deleteSize(s.id!),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        color: kDarkGray,
+        child:
+            isLoading
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: kDarkGray),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Đang tải dữ liệu...',
+                        style: TextStyle(color: kMediumGray),
+                      ),
+                    ],
                   ),
-                  buildPagination(),
-                ],
-              ),
+                )
+                : sizes.isEmpty
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.straighten, size: 64, color: kMediumGray),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Chưa có size nào!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: kMediumGray,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Nhấn nút + để thêm size mới',
+                        style: TextStyle(color: kMediumGray),
+                      ),
+                    ],
+                  ),
+                )
+                : ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: sizes.length + (isLoadingMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == sizes.length) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(color: kDarkGray),
+                      );
+                    }
+
+                    final size = sizes[index];
+                    return Card(
+                      color: kWhite,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: kDarkGray.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.straighten, color: kDarkGray),
+                        ),
+                        title: Text(
+                          size.name,
+                          style: TextStyle(
+                            color: kDarkGray,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        subtitle:
+                            size.createdAt != null
+                                ? Text(
+                                  'Tạo: ${size.createdAt.toString().split('.')[0]}',
+                                  style: TextStyle(
+                                    color: kMediumGray,
+                                    fontSize: 12,
+                                  ),
+                                )
+                                : null,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: kDarkGray),
+                              onPressed: () => showSizeDialog(size: size),
+                              tooltip: 'Chỉnh sửa',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => deleteSize(size),
+                              tooltip: 'Xóa',
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showSizeDialog(),
-        child: Icon(Icons.add, color: kWhite),
         backgroundColor: kDarkGray,
-      ),
-    );
-  }
-
-  Widget buildPagination() {
-    List<Widget> pages = [];
-    int start = (currentPage - 2 > 0) ? currentPage - 2 : 1;
-    int end = (currentPage + 2 < totalPage) ? currentPage + 2 : totalPage;
-
-    if (start > 1) {
-      pages.add(pageButton(1));
-      if (start > 2) pages.add(Text('...'));
-    }
-    for (int i = start; i <= end; i++) {
-      pages.add(pageButton(i));
-    }
-    if (end < totalPage) {
-      if (end < totalPage - 1) pages.add(Text('...'));
-      pages.add(pageButton(totalPage));
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: Icon(Icons.chevron_left),
-          onPressed:
-              currentPage > 1
-                  ? () => fetchAllSizes(page: currentPage - 1)
-                  : null,
-        ),
-        ...pages,
-        IconButton(
-          icon: Icon(Icons.chevron_right),
-          onPressed:
-              currentPage < totalPage
-                  ? () => fetchAllSizes(page: currentPage + 1)
-                  : null,
-        ),
-      ],
-    );
-  }
-
-  Widget pageButton(int page) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: page == currentPage ? Colors.blue : Colors.white,
-          foregroundColor: page == currentPage ? Colors.white : Colors.black,
-          minimumSize: Size(36, 36),
-          padding: EdgeInsets.zero,
-        ),
-        onPressed: page == currentPage ? null : () => fetchAllSizes(page: page),
-        child: Text('$page'),
+        child: Icon(Icons.add, color: kWhite),
+        tooltip: 'Thêm size mới',
       ),
     );
   }

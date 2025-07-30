@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//Khác
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -12,26 +11,25 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
 
-  // Các biến lưu thông tin
-  String firstName = '';
-  String lastName = '';
+  // Các biến lưu thông tin - SỬA ĐỔI ĐỂ SỬ DỤNG DỮ LIỆU TỪ LOGIN
+  String userName = '';
+  String userEmail = '';
+  String userPhone = '';
+  String userAddress = '';
   String gender = '';
   String dob = '';
-  String phone = '';
-  String email = '';
 
   // Biến lỗi cho từng trường
-  bool firstNameError = false;
-  bool lastNameError = false;
+  bool nameError = false;
   bool genderError = false;
   bool dobError = false;
   bool phoneError = false;
 
   // Controllers cho TextField
-  late TextEditingController firstNameController;
-  late TextEditingController lastNameController;
+  late TextEditingController nameController;
   late TextEditingController phoneController;
   late TextEditingController emailController;
+  late TextEditingController addressController;
   late DateTime selectedDate;
 
   @override
@@ -44,18 +42,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      firstName = prefs.getString('firstName') ?? '';
-      lastName = prefs.getString('lastName') ?? '';
+      // ✅ LẤY DỮ LIỆU TỪ LOGIN
+      userName = prefs.getString('userName') ?? '';
+      userEmail = prefs.getString('userEmail') ?? '';
+      userPhone = prefs.getString('userPhone') ?? '';
+      userAddress = prefs.getString('userAddress') ?? '';
+
+      // Lấy dữ liệu profile đã lưu (nếu có)
       gender = prefs.getString('gender') ?? '';
       dob = prefs.getString('dob') ?? '';
-      phone = prefs.getString('phone') ?? '';
-      email = prefs.getString('email') ?? '';
 
       // Khởi tạo controllers với dữ liệu đã lưu
-      firstNameController = TextEditingController(text: firstName);
-      lastNameController = TextEditingController(text: lastName);
-      phoneController = TextEditingController(text: phone);
-      emailController = TextEditingController(text: email);
+      nameController = TextEditingController(text: userName);
+      phoneController = TextEditingController(text: userPhone);
+      emailController = TextEditingController(text: userEmail);
+      addressController = TextEditingController(text: userAddress);
 
       // Parse date of birth if exists
       if (dob.isNotEmpty) {
@@ -70,29 +71,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _saveUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('firstName', firstName);
-    await prefs.setString('lastName', lastName);
+
+    // ✅ LÀU VÀO CẢ 2 NƠI: userData từ login + profile data
+    await prefs.setString('userName', userName);
+    await prefs.setString('userEmail', userEmail);
+    await prefs.setString('userPhone', userPhone);
+    await prefs.setString('userAddress', userAddress);
     await prefs.setString('gender', gender);
     await prefs.setString('dob', dob);
-    await prefs.setString('phone', phone);
-    await prefs.setString('email', email);
+
+    // Lưu thêm cho account overview screen
+    await prefs.setString('displayName', userName);
   }
 
   @override
   void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
+    nameController.dispose();
     phoneController.dispose();
     emailController.dispose();
+    addressController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Light Gray
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF383838), // Dark Gray
+        backgroundColor: const Color(0xFF383838),
         title: const Text(
           'Hồ Sơ',
           style: TextStyle(
@@ -125,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const CircleAvatar(
                           radius: 36,
-                          backgroundColor: Color(0xFF808080), // Medium Gray
+                          backgroundColor: Color(0xFF808080),
                           child: Icon(
                             Icons.person,
                             size: 48,
@@ -157,9 +163,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                'THÀNH VIÊN',
-                                style: TextStyle(
+                              Text(
+                                userName.isNotEmpty
+                                    ? '$userName | THÀNH VIÊN'
+                                    : 'THÀNH VIÊN',
+                                style: const TextStyle(
                                   fontFamily: 'RobotoSlab',
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -229,6 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+
               // Thông tin chung
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -250,10 +259,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               setState(() {
                                 isEditing = false;
                                 // Reset lại giá trị controller nếu hủy
-                                firstNameController.text = firstName;
-                                lastNameController.text = lastName;
-                                phoneController.text = phone;
-                                emailController.text = email;
+                                nameController.text = userName;
+                                phoneController.text = userPhone;
+                                emailController.text = userEmail;
+                                addressController.text = userAddress;
                               });
                             },
                             child: const Text(
@@ -261,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontFamily: 'RobotoSlab',
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF808080), // Medium Gray
+                                color: Color(0xFF808080),
                               ),
                             ),
                           ),
@@ -285,67 +294,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              Row(
+
+              // Tên
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child:
-                        isEditing
-                            ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildEditField(
-                                  controller: firstNameController,
-                                  label: 'Tên',
+                  isEditing
+                      ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildEditField(
+                            controller: nameController,
+                            label: 'Họ và Tên',
+                          ),
+                          if (nameError)
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8, bottom: 4),
+                              child: Text(
+                                '* Vui lòng nhập họ và tên',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
                                 ),
-                                if (firstNameError)
-                                  const Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 8,
-                                      bottom: 4,
-                                    ),
-                                    child: Text(
-                                      '* Vui lòng nhập tên',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            )
-                            : _buildInfoField(label: 'Tên', value: firstName),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child:
-                        isEditing
-                            ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildEditField(
-                                  controller: lastNameController,
-                                  label: 'Họ',
-                                ),
-                                if (lastNameError)
-                                  const Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 8,
-                                      bottom: 4,
-                                    ),
-                                    child: Text(
-                                      '* Vui lòng nhập họ',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            )
-                            : _buildInfoField(label: 'Họ', value: lastName),
-                  ),
+                              ),
+                            ),
+                        ],
+                      )
+                      : _buildInfoField(label: 'Họ và Tên', value: userName),
                 ],
               ),
+
+              // Giới tính
               isEditing
                   ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,6 +341,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   )
                   : _buildInfoField(label: 'Giới Tính', value: gender),
+
+              // Ngày sinh
               isEditing
                   ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +359,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   )
                   : _buildInfoField(label: 'Ngày Sinh', value: dob),
+
               const SizedBox(height: 8),
+
+              // Số điện thoại
               const Text(
                 'Số Điện Thoại',
                 style: TextStyle(
@@ -449,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           keyboardType: TextInputType.phone,
                                         )
                                         : Text(
-                                          phone,
+                                          userPhone,
                                           style: const TextStyle(
                                             fontFamily: 'Roboto',
                                             fontSize: 16,
@@ -479,6 +463,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+
+              // Email
               const Text(
                 'Email',
                 style: TextStyle(
@@ -523,7 +509,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      email,
+                      userEmail,
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 16,
+                        color: Color(0xFF000000),
+                      ),
+                    ),
+                  ),
+              const SizedBox(height: 16),
+
+              // Địa chỉ
+              const Text(
+                'Địa Chỉ',
+                style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Color(0xFF383838),
+                ),
+              ),
+              const SizedBox(height: 8),
+              isEditing
+                  ? TextField(
+                    controller: addressController,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 16,
+                      color: Color(0xFF000000),
+                    ),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                    ),
+                    maxLines: 2,
+                  )
+                  : Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      userAddress,
                       style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 16,
@@ -532,6 +573,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
               const SizedBox(height: 32),
+
               // Button Lưu thông tin
               if (isEditing)
                 SizedBox(
@@ -547,30 +589,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       // Reset lỗi trước khi kiểm tra
                       setState(() {
-                        firstNameError =
-                            firstNameController.text.trim().isEmpty;
-                        lastNameError = lastNameController.text.trim().isEmpty;
+                        nameError = nameController.text.trim().isEmpty;
                         genderError = gender.trim().isEmpty;
                         dobError = dob.trim().isEmpty;
                         phoneError = phoneController.text.trim().isEmpty;
                       });
-                      if (firstNameError ||
-                          lastNameError ||
-                          genderError ||
-                          dobError ||
-                          phoneError) {
+
+                      if (nameError || genderError || dobError || phoneError) {
                         return;
                       }
+
                       setState(() {
-                        firstName = firstNameController.text;
-                        lastName = lastNameController.text;
-                        phone = phoneController.text;
-                        email = emailController.text;
-                        gender = gender;
+                        userName = nameController.text;
+                        userPhone = phoneController.text;
+                        userEmail = emailController.text;
+                        userAddress = addressController.text;
                         dob = selectedDate.toIso8601String().split('T')[0];
                         isEditing = false;
                       });
+
                       await _saveUserData();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✅ Đã lưu thông tin thành công'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
                     },
                     child: const Text(
                       'Lưu thông tin',
@@ -600,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF808080), // Medium Gray
+            color: Color(0xFF808080),
           ),
         ),
         const SizedBox(height: 4),
@@ -608,15 +653,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF), // Trắng
+            color: const Color(0xFFFFFFFF),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            value,
-            style: const TextStyle(
+            value.isEmpty ? 'Chưa cập nhật' : value,
+            style: TextStyle(
               fontFamily: 'Roboto',
               fontSize: 16,
-              color: Color(0xFF000000), // Đen
+              color:
+                  value.isEmpty
+                      ? const Color(0xFF808080)
+                      : const Color(0xFF000000),
             ),
           ),
         ),
@@ -637,7 +685,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: const TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF808080), // Medium Gray
+            color: Color(0xFF808080),
           ),
         ),
         const SizedBox(height: 4),
@@ -673,7 +721,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF808080), // Medium Gray
+            color: Color(0xFF808080),
           ),
         ),
         const SizedBox(height: 4),
@@ -722,7 +770,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14,
-            color: Color(0xFF808080), // Medium Gray
+            color: Color(0xFF808080),
           ),
         ),
         const SizedBox(height: 4),

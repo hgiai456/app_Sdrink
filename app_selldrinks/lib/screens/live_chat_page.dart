@@ -110,7 +110,7 @@ class _LiveChatPageState extends State<LiveChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50), // Tăng chiều cao AppBar
+        preferredSize: const Size.fromHeight(0), // Tăng chiều cao AppBar
         child: AppBar(
           backgroundColor: const Color(0xFF383838), // Màu đen giống ảnh
           elevation: 0,

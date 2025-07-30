@@ -18,20 +18,20 @@ class AccountOverviewScreen extends StatefulWidget {
 }
 
 class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
-  String firstName = '';
-  String lastName = '';
+  String userName = '';
 
   @override
   void initState() {
     super.initState();
-    _loadName();
+    _loadUserName();
   }
 
-  Future<void> _loadName() async {
+  Future<void> _loadUserName() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      firstName = prefs.getString('firstName') ?? '';
-      lastName = prefs.getString('lastName') ?? '';
+      // ✅ LẤY TÊN TỪ DỮ LIỆU LOGIN
+      userName =
+          prefs.getString('userName') ?? prefs.getString('displayName') ?? '';
     });
   }
 
@@ -43,7 +43,7 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
         preferredSize: const Size.fromHeight(170),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF383838), // Header xám đậm
+            color: const Color(0xFF383838),
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(32),
               bottomRight: Radius.circular(32),
@@ -113,9 +113,10 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (firstName.isNotEmpty || lastName.isNotEmpty)
-                                      ? '$lastName $firstName | THÀNH VIÊN'
-                                      : 'HI | THÀNH VIÊN',
+                                  // ✅ HIỂN THỊ TÊN TỪ LOGIN
+                                  userName.isNotEmpty
+                                      ? '$userName | THÀNH VIÊN'
+                                      : 'THÀNH VIÊN',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -251,7 +252,8 @@ class _AccountOverviewScreenState extends State<AccountOverviewScreen> {
                             builder: (context) => const ProfileScreen(),
                           ),
                         );
-                        _loadName(); // Reload tên khi quay lại
+                        // ✅ RELOAD TÊN KHI QUAY LẠI TỪ PROFILE
+                        _loadUserName();
                       },
                     ),
                     Divider(height: 1, color: Color(0xFFF5F5F5)),

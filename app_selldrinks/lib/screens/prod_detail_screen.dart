@@ -191,11 +191,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: const Center(child: Icon(Icons.image, size: 60)),
                       ),
                   Positioned(
-                    top: 0,
+                    top: 20,
                     left: 0,
                     child: IconButton(
                       icon: Icon(
-                        Icons.close,
+                        Icons.arrow_back,
                         color:
                             highlandsTheme
                                 .bottomNavigationBarTheme
